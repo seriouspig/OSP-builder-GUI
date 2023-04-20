@@ -29,9 +29,11 @@ const Config = ({ config, updateConfig }) => {
     setSkiphtml(config.skiphtml);
   }, []);
 
-  const toggleIntegration = () => {
-    setIntegration(!integration)
-    window.electron.ipcRenderer.sendMessage('set-integration', !integration);
+  const toggleValue = (setter, value, string) => {
+    setter(!value)
+    console.log("---THIS IS THE VALUE:")
+    console.log(value)
+    window.electron.ipcRenderer.sendMessage('set-integration', [!value, string]);
   }
 
   return (
@@ -44,7 +46,7 @@ const Config = ({ config, updateConfig }) => {
               type="checkbox"
               checked={integration}
               className="checkbox"
-              onChange={toggleIntegration}
+              onChange={() => toggleValue(setIntegration, integration, "integration")}
             />
             Integration mode
           </label>
@@ -55,7 +57,7 @@ const Config = ({ config, updateConfig }) => {
               type="checkbox"
               checked={inboxVolume}
               className="checkbox"
-              onChange={() => setInboxVolume(!inboxVolume)}
+              onChange={() => toggleValue(setInboxVolume, inboxVolume, "inboxVolume")}
             />
             Create Inbox Volume
           </label>

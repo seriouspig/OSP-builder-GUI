@@ -111,26 +111,23 @@ ipcMain.on('set-integration', async (event, arg) => {
     }
     console.log(data)
     console.log(arg)
+    console.log(arg[1] + " " + arg[0].toString())
+    const lineToReplace = arg[1] + " " + (!arg[0]).toString()
+    const replacer = arg[1] + ' ' + arg[0].toString();
 
-    if (arg === true) {
-          var result = data.replace(
-            /CONST integration false/g,
-            'CONST integration true'
-          );
+    console.log(lineToReplace)
+    console.log(replacer)
 
-          fs.writeFile(configBowl, result, 'utf8', function (err) {
-            if (err) return console.log(err);
-          });
-    } else if (arg === false) {
-      var result = data.replace(
-        /CONST integration true/g,
-        'CONST integration false'
-      );
+    var re = new RegExp(lineToReplace, 'g');
 
-      fs.writeFile(configBowl, result, 'utf8', function (err) {
-        if (err) return console.log(err);
-      });
-    }
+    var result = data.replace(
+      re,
+      replacer
+    );
+
+    fs.writeFile(configBowl, result, 'utf8', function (err) {
+      if (err) return console.log(err);
+    });
 
   });
   event.reply('get-tags', 'Integration changed');
