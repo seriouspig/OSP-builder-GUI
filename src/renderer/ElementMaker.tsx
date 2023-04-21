@@ -17,11 +17,11 @@ function ElementMaker(props) {
             autoFocus
           />
         ) : (
-          <span
+          <div className="tags-button"
             onDoubleClick={props.handleDoubleClick}
           >
             {props.value}
-          </span>
+          </div>
         )
       }
     </span>

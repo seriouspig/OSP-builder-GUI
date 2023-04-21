@@ -109,26 +109,22 @@ ipcMain.on('toggle-config-value', async (event, arg) => {
     if (err) {
       return console.log(err);
     }
-    console.log(data)
-    console.log(arg)
-    console.log(arg[1] + " " + arg[0].toString())
-    const lineToReplace = arg[1] + " " + (!arg[0]).toString()
+    console.log(data);
+    console.log(arg);
+    console.log(arg[1] + ' ' + arg[0].toString());
+    const lineToReplace = arg[1] + ' ' + (!arg[0]).toString();
     const replacer = arg[1] + ' ' + arg[0].toString();
 
-    console.log(lineToReplace)
-    console.log(replacer)
+    console.log(lineToReplace);
+    console.log(replacer);
 
     var re = new RegExp(lineToReplace, 'g');
 
-    var result = data.replace(
-      re,
-      replacer
-    );
+    var result = data.replace(re, replacer);
 
     fs.writeFile(configBowl, result, 'utf8', function (err) {
       if (err) return console.log(err);
     });
-
   });
   event.reply('toggle-config-value', 'Integration changed');
 });
@@ -168,8 +164,16 @@ ipcMain.on('change-text-tags-value', async (event, arg) => {
     console.log(data);
     console.log(arg);
 
-    const lineToReplace = arg[0];
-    const replacer = arg[2];
+    var lineToReplace
+    var replacer
+    if (arg[1] === "customerName" || arg[1] === "customerTag") {
+          lineToReplace = arg[1] + ' "' + arg[0] + '"';
+          replacer = arg[1] + ' "' + arg[2] + '"';
+    } else {
+          lineToReplace = arg[1] + ' ' + arg[0];
+          replacer = arg[1] + ' ' + arg[2];
+    }
+
 
     console.log(lineToReplace);
     console.log(replacer);
@@ -182,7 +186,7 @@ ipcMain.on('change-text-tags-value', async (event, arg) => {
       if (err) return console.log(err);
     });
   });
-  event.reply('change-text-tags-value', arg[2]);
+  event.reply('change-text-tags-value', arg);
 });
 
 // ================================ OSP BUILDER GUI END ====================================
