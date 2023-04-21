@@ -14,7 +14,6 @@ const Config = ({ config, updateConfig }) => {
   const [skipcreaterelease, setSkipcreaterelease] = useState(false);
   const [skipOpensslEncryption, setSkipopensslencryption] = useState(false);
 
-
   useEffect(() => {
     console.log(config);
     console.log('Config loaded');
@@ -30,11 +29,14 @@ const Config = ({ config, updateConfig }) => {
   }, []);
 
   const toggleValue = (setter, value, string) => {
-    setter(!value)
-    console.log("---THIS IS THE VALUE:")
-    console.log(value)
-    window.electron.ipcRenderer.sendMessage('set-integration', [!value, string]);
-  }
+    setter(!value);
+    console.log('---THIS IS THE VALUE:');
+    console.log(value);
+    window.electron.ipcRenderer.sendMessage('toggle-config-value', [
+      !value,
+      string,
+    ]);
+  };
 
   return (
     <div className="info-module">
@@ -46,7 +48,9 @@ const Config = ({ config, updateConfig }) => {
               type="checkbox"
               checked={integration}
               className="checkbox"
-              onChange={() => toggleValue(setIntegration, integration, "integration")}
+              onChange={() =>
+                toggleValue(setIntegration, integration, 'integration')
+              }
             />
             Integration mode
           </label>
@@ -57,7 +61,9 @@ const Config = ({ config, updateConfig }) => {
               type="checkbox"
               checked={inboxVolume}
               className="checkbox"
-              onChange={() => toggleValue(setInboxVolume, inboxVolume, "inboxVolume")}
+              onChange={() =>
+                toggleValue(setInboxVolume, inboxVolume, 'inboxVolume')
+              }
             />
             Create Inbox Volume
           </label>
@@ -84,7 +90,13 @@ const Config = ({ config, updateConfig }) => {
               type="checkbox"
               checked={!skipcreatestage}
               className="checkbox"
-              onChange={() => setSkipcreatestage(!skipcreatestage)}
+              onChange={() =>
+                toggleValue(
+                  setSkipcreatestage,
+                  skipcreatestage,
+                  'skipcreatestage'
+                )
+              }
             />
             Create Stage
           </label>
@@ -95,7 +107,7 @@ const Config = ({ config, updateConfig }) => {
               type="checkbox"
               checked={!skipgit}
               className="checkbox"
-              onChange={() => setSkipgit(!skipgit)}
+              onChange={() => toggleValue(setSkipgit, skipgit, 'skipgit')}
             />
             Git
           </label>
@@ -106,7 +118,13 @@ const Config = ({ config, updateConfig }) => {
               type="checkbox"
               checked={!skipupdateconfigs}
               className="checkbox"
-              onChange={() => setSkipupdateconfigs(!skipupdateconfigs)}
+              onChange={() =>
+                toggleValue(
+                  setSkipupdateconfigs,
+                  skipupdateconfigs,
+                  'skipupdateconfigs'
+                )
+              }
             />
             Update Configs
           </label>
@@ -117,7 +135,13 @@ const Config = ({ config, updateConfig }) => {
               type="checkbox"
               checked={!skipsetupsingpackage}
               className="checkbox"
-              onChange={() => setSkipsetupsingpackage(!skipsetupsingpackage)}
+              onChange={() =>
+                toggleValue(
+                  setSkipsetupsingpackage,
+                  skipsetupsingpackage,
+                  'skipsetupstagingpackage'
+                )
+              }
             />
             Setup Staging Package
           </label>
@@ -128,7 +152,7 @@ const Config = ({ config, updateConfig }) => {
               type="checkbox"
               checked={!skipdop}
               className="checkbox"
-              onChange={() => setSkipdop(!skipdop)}
+              onChange={() => toggleValue(setSkipdop, skipdop, 'skipdop')}
             />
             DOP
           </label>
@@ -139,7 +163,9 @@ const Config = ({ config, updateConfig }) => {
               type="checkbox"
               checked={!skipcontent}
               className="checkbox"
-              onChange={() => setSkipcontent(!skipcontent)}
+              onChange={() =>
+                toggleValue(setSkipcontent, skipcontent, 'skipcontent')
+              }
             />
             Content
           </label>
@@ -150,7 +176,7 @@ const Config = ({ config, updateConfig }) => {
               type="checkbox"
               checked={!skiphtml}
               className="checkbox"
-              onChange={() => setSkiphtml(!skiphtml)}
+              onChange={() => toggleValue(setSkiphtml, skiphtml, 'skiphtml')}
             />
             Html
           </label>
@@ -161,7 +187,13 @@ const Config = ({ config, updateConfig }) => {
               type="checkbox"
               checked={!skipcreaterelease}
               className="checkbox"
-              onChange={() => setSkipcreaterelease(!skipcreaterelease)}
+              onChange={() =>
+                toggleValue(
+                  setSkipcreaterelease,
+                  skipcreaterelease,
+                  'skipcreaterelease'
+                )
+              }
             />
             Create Realease
           </label>
@@ -174,7 +206,13 @@ const Config = ({ config, updateConfig }) => {
                 type="radio"
                 checked={skipOpensslEncryption && true}
                 className="radio-button"
-                onClick={() => setSkipopensslencryption(!skipOpensslEncryption)}
+                onClick={() =>
+                  toggleValue(
+                    setSkipopensslencryption,
+                    skipOpensslEncryption,
+                    'skipopensslencryption'
+                  )
+                }
               />
               GPG
             </label>
@@ -183,14 +221,19 @@ const Config = ({ config, updateConfig }) => {
                 type="radio"
                 checked={!skipOpensslEncryption && true}
                 className="radio-button"
-                onClick={() => setSkipopensslencryption(!skipOpensslEncryption)}
+                onClick={() =>
+                  toggleValue(
+                    setSkipopensslencryption,
+                    skipOpensslEncryption,
+                    'skipopensslencryption'
+                  )
+                }
               />
               openSSL
             </label>
           </div>
         </div>
       </div>
-      <button onClick={() => updateConfig()}>Update Config</button>
     </div>
   );
 };

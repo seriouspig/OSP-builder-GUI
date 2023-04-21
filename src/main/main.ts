@@ -103,7 +103,7 @@ ipcMain.on('get-config', async (event, arg) => {
 });
 
 // ------ READ THE TAGS.BOWL -------
-ipcMain.on('set-integration', async (event, arg) => {
+ipcMain.on('toggle-config-value', async (event, arg) => {
   console.log('=========== CHANGING INTEGRATION =============');
   fs.readFile(configBowl, 'utf8', function (err, data) {
     if (err) {
@@ -130,7 +130,33 @@ ipcMain.on('set-integration', async (event, arg) => {
     });
 
   });
-  event.reply('get-tags', 'Integration changed');
+  event.reply('toggle-config-value', 'Integration changed');
+});
+
+ipcMain.on('toggle-tags-value', async (event, arg) => {
+  console.log('=========== CHANGING TAGS =============');
+  fs.readFile(tagsBowl, 'utf8', function (err, data) {
+    if (err) {
+      return console.log(err);
+    }
+    console.log(data);
+    console.log(arg);
+    console.log(arg[1] + ' ' + arg[0].toString());
+    const lineToReplace = arg[1] + ' ' + arg[0].toString();
+    const replacer = arg[1] + ' ' + arg[2].toString();
+
+    console.log(lineToReplace);
+    console.log(replacer);
+
+    var re = new RegExp(lineToReplace, 'g');
+
+    var result = data.replace(re, replacer);
+
+    fs.writeFile(tagsBowl, result, 'utf8', function (err) {
+      if (err) return console.log(err);
+    });
+  });
+  event.reply('toggle-tags-value', 'Tags changed');
 });
 
 // ================================ OSP BUILDER GUI END ====================================

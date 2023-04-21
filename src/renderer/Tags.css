@@ -5,3 +5,11 @@
     border: 1px solid black;
 }
 
+.tags-button {
+    border: 1px solid black;
+}
+
+.tags-button:hover {
+    cursor: pointer;
+}
+
