@@ -19,11 +19,6 @@ function ElementMaker(props) {
         ) : (
           <span
             onDoubleClick={props.handleDoubleClick}
-            style={{
-              display: 'inline-block',
-              height: '25px',
-              minWidth: '300px',
-            }}
           >
             {props.value}
           </span>

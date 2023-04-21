@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import './Tags.css';
+import ElementMaker from './ElementMaker';
+import { config } from 'process';
 
 const Tags = ({ tags }) => {
   const [alna, setAlna] = useState('');
-  const [customerName, setCustomerName] = useState('');
+  const [customerName, setCustomerName] = useState({old: '', new: ''});
   const [customerTag, setCustomerTag] = useState('');
   const [content, setContent] = useState('');
   const [base, setBase] = useState('');
@@ -14,9 +16,16 @@ const Tags = ({ tags }) => {
   const [papause, setPapause] = useState('');
   const [wow, setWow] = useState('');
 
+  const [editName, setEditName] = useState(false);
+  const [editTag, setEditTag] = useState(false);
+
   useEffect(() => {
+    console.log("--------- RESTARTED TAGS ---------")
     setAlna(tags.alna);
-    setCustomerName(tags.customerName);
+    setCustomerName({
+      old: tags.customerName,
+      new: tags.customerName,
+    });
     setCustomerTag(tags.customerTag);
     setContent(tags.content);
     setBase(tags.base);
@@ -27,6 +36,8 @@ const Tags = ({ tags }) => {
     setPapause(tags.papause);
     setWow(tags.wow);
   }, []);
+
+
 
   const toggleTagsValue = (setter, value, string) => {
     let newValue = '';
@@ -45,18 +56,53 @@ const Tags = ({ tags }) => {
     ]);
   };
 
+  const handleTextChange = (setter, value, string) => {
+    setter(value)
+    let oldValue = customerName.old;
+    console.log(string + ' ' + oldValue);
+    let newValue = customerName.new;
+    console.log(string + ' ' + newValue);
+    window.electron.ipcRenderer.sendMessage('change-text-tags-value', [
+      oldValue,
+      string,
+      newValue,
+    ]);
+  };
+
+  window.electron.ipcRenderer.once('change-text-tags-value', (arg) => {
+    setCustomerName({old: arg, new: arg})
+    console.log('Here are the tags:');
+    console.log(arg);
+    
+  });
+
   return (
     <div className="info-module">
       <div className="header">TAGS</div>
       <div className="info tags">
         <div className="info-text">
           <div>Customer name:</div>
-          <div className="tags-button">{customerName}</div>
+          <ElementMaker
+            value={customerName.new}
+            handleChange={(e) => setCustomerName({old: customerName.old, new: e.target.value})}
+            handleDoubleClick={() => setEditName(true)}
+            handleBlur={() =>
+              handleTextChange(setCustomerName, customerName, 'customerName')
+            }
+            showInputEle={editName}
+          />
         </div>
         <div className="info-text">
           <div>Customer tag:</div>
-          <div className="tags-button">{customerTag}</div>
+          <ElementMaker
+            value={customerTag}
+            handleChange={(e) => setCustomerTag(e.target.value)}
+            handleDoubleClick={() => setEditTag(true)}
+            handleBlur={() => setEditTag(false)}
+            showInputEle={editTag}
+          />
         </div>
+
         <div className="info-text">
           <div>Alna version:</div>
           <div className="info-radio">

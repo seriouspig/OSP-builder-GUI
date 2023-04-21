@@ -159,6 +159,32 @@ ipcMain.on('toggle-tags-value', async (event, arg) => {
   event.reply('toggle-tags-value', 'Tags changed');
 });
 
+ipcMain.on('change-text-tags-value', async (event, arg) => {
+  console.log('=========== CHANGING TAGS TEXT =============');
+  fs.readFile(tagsBowl, 'utf8', function (err, data) {
+    if (err) {
+      return console.log(err);
+    }
+    console.log(data);
+    console.log(arg);
+
+    const lineToReplace = arg[0];
+    const replacer = arg[2];
+
+    console.log(lineToReplace);
+    console.log(replacer);
+
+    var re = new RegExp(lineToReplace, 'g');
+
+    var result = data.replace(re, replacer);
+
+    fs.writeFile(tagsBowl, result, 'utf8', function (err) {
+      if (err) return console.log(err);
+    });
+  });
+  event.reply('change-text-tags-value', arg[2]);
+});
+
 // ================================ OSP BUILDER GUI END ====================================
 
 if (process.env.NODE_ENV === 'production') {

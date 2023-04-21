@@ -46,24 +46,6 @@ function Hello() {
       <div className="info-container">
         {tagsLoaded && <Tags tags={tags}/>}
         {configLoaded && <Config config={config} updateConfig={updateConfig}/>}
-        {/* <div className="info tags">
-          {Object.entries(tags).map(([key, value]) => {
-            return (
-              <div>
-                {key} : {value}
-              </div>
-            );
-          })}
-        </div> */}
-        {/* <div className="info config">
-          {Object.entries(config).map(([key, value]) => {
-            return (
-              <div>
-                {key} : {value}
-              </div>
-            );
-          })}
-        </div> */}
       </div>
     </div>
   );
