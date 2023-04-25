@@ -195,6 +195,7 @@ p {
 .info-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 6fr 1fr;
   margin: 1rem;
 }
 
@@ -227,4 +228,17 @@ p {
 
 .radio-button {
   margin-right: 0.25rem;
+}
+
+.display-linebreak {
+  white-space: pre;
+  height: 80vh;
+  border: solid 1px black;
+    padding: 1rem;
+}
+
+.log-container {
+  display: grid;
+  grid-template-rows: 80vh 1fr;
+  margin: 1rem;
 }

@@ -9,13 +9,16 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, ipcRenderer } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
 const fs = require('fs');
+var childProcess = require('child_process');
+const { spawn } = require('child_process');
+var util = require('util');
 
 const tagsBowl = '/Users/piotrgryko/Downloads/OSP_builder_gui/tags.bowl';
 const configBowl = '/Users/piotrgryko/Downloads/OSP_builder_gui/config.bowl';
@@ -164,16 +167,15 @@ ipcMain.on('change-text-tags-value', async (event, arg) => {
     console.log(data);
     console.log(arg);
 
-    var lineToReplace
-    var replacer
-    if (arg[1] === "customerName" || arg[1] === "customerTag") {
-          lineToReplace = arg[1] + ' "' + arg[0] + '"';
-          replacer = arg[1] + ' "' + arg[2] + '"';
+    var lineToReplace;
+    var replacer;
+    if (arg[1] === 'customerName' || arg[1] === 'customerTag') {
+      lineToReplace = arg[1] + ' "' + arg[0] + '"';
+      replacer = arg[1] + ' "' + arg[2] + '"';
     } else {
-          lineToReplace = arg[1] + ' ' + arg[0];
-          replacer = arg[1] + ' ' + arg[2];
+      lineToReplace = arg[1] + ' ' + arg[0];
+      replacer = arg[1] + ' ' + arg[2];
     }
-
 
     console.log(lineToReplace);
     console.log(replacer);
@@ -187,6 +189,41 @@ ipcMain.on('change-text-tags-value', async (event, arg) => {
     });
   });
   event.reply('change-text-tags-value', arg);
+});
+
+// ------ RUN BUILD SCRIPT -------
+let child = null
+
+ipcMain.on('run-script', async (event, arg) => {
+  var log_file = fs.createWriteStream(
+    '/Users/piotrgryko/repos/OSP-builder-gui/osp-builder-gui/testscriptlog.log',
+    { flags: 'w' }
+  );
+  child = spawn('node', [
+    '/Users/piotrgryko/repos/OSP-builder-gui/osp-builder-gui/testscript.js',
+    { cwd: null, detached: false },
+  ]);
+  child.stdout.on('data', (data) => {
+    console.log(`child stdout: ${data}`);
+    // event.sender.send('start-logging', 'Start logging');
+    mainWindow.webContents.send('output', `${data}`);
+    log_file.write(data);
+  });
+
+  child.stderr.on('data', (data) => {
+    console.error(`child stderr:\n${data}`);
+  });
+
+  process.on('exit', function () {
+    child.stdin.pause();
+    child.kill();
+  });
+});
+
+ipcMain.on('kill-script', (event, data) => {
+  // kill(child.pid, 'SIGKILL');
+      child.stdin.pause();
+      child.kill();
 });
 
 // ================================ OSP BUILDER GUI END ====================================
