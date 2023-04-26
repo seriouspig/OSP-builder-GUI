@@ -4,8 +4,8 @@ const logger = (val) => {
 
 const counter = (num) => {
     for (let i=0; i<num; i++) {
-        setTimeout(logger, 1000 * i, i + " building")
+        setTimeout(logger, 300 * i, i + " building")
     }
 }
 
-counter(10)
+counter(200)

@@ -235,10 +235,15 @@ p {
   height: 80vh;
   border: solid 1px black;
     padding: 1rem;
+    overflow: scroll;
+      display: flex;
+  flex-direction: column-reverse;
+
 }
 
 .log-container {
   display: grid;
   grid-template-rows: 80vh 1fr;
   margin: 1rem;
+  
 }
