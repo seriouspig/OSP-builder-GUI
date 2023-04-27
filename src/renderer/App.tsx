@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Tags from './Tags';
 import Config from './Config';
 import Settings from './Settings';
+import Log from './Log';
 
 function Hello() {
   const [tags, setTags] = useState({});
@@ -13,6 +14,8 @@ function Hello() {
   const [state, setState] = useState('config');
   const [log, setLog] = useState('');
   const [builderPath, setBuilderPath] = useState('');
+  const [logName, setLogName] = useState('Log name ...');
+  
 
   useEffect(() => {
     console.log('State Changed');
@@ -45,10 +48,16 @@ function Hello() {
   });
 
   window.electron.ipcRenderer.once('get-config', (arg) => {
-    setConfig(arg);
-    console.log('Here is the config:');
-    console.log(arg);
-    setConfigLoaded(true);
+    if (arg !== 'no config') {
+      setConfig(arg);
+      console.log('Here is the config:');
+      console.log(arg);
+      setConfigLoaded(true);
+    } else {
+      console.log('Here is the config:');
+      console.log(arg);
+      setConfigLoaded(false);
+    }
   });
 
   window.electron.ipcRenderer.once('get-builder-path', (arg) => {
@@ -60,7 +69,7 @@ function Hello() {
   const toggleBuild = () => {
     if (state === 'config') {
       setLog('');
-      window.electron.ipcRenderer.sendMessage('run-script');
+      window.electron.ipcRenderer.sendMessage('run-script', logName);
       setState('build');
     } else if (state === 'build') {
       setState('config');
@@ -85,7 +94,7 @@ function Hello() {
 
   return (
     <div className="container">
-      <div className="title">OSP BUILDER</div>
+      <div className="title">OSP BUILDER {logName}</div>
       {state === 'settings' && (
         <Settings
           onClose={() => setState('config')}
@@ -101,9 +110,11 @@ function Hello() {
       )}
       {state === 'config' && (
         <div className="info-container">
-          {tagsLoaded && <Tags tags={tags} />}
-          {configLoaded && <Config config={config} />}
-          <button onClick={toggleBuild}>Build</button>
+          <div>{tagsLoaded && <Tags tags={tags} />}
+          <Log logName={logName} saveLogName={(name) => setLogName(name)}/>
+          </div>
+          <div>{configLoaded && <Config config={config} />}</div>
+          {(tagsLoaded && configLoaded) && <button onClick={toggleBuild}>Build</button>}
         </div>
       )}
       {state === 'build' && (

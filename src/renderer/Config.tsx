@@ -4,6 +4,7 @@ import './Config.css';
 const Config = ({ config }) => {
   const [integration, setIntegration] = useState(false);
   const [inboxVolume, setInboxVolume] = useState(false);
+  const [inputPathRoot, setInputPathRoot] = useState('')
   const [skipcreatestage, setSkipcreatestage] = useState(false);
   const [skipgit, setSkipgit] = useState(false);
   const [skipupdateconfigs, setSkipupdateconfigs] = useState(false);
@@ -26,6 +27,7 @@ const Config = ({ config }) => {
     setSkipdop(config.skipdop);
     setSkipcontent(config.skipcontent);
     setSkiphtml(config.skiphtml);
+    setInputPathRoot(config.integrationInputPathRoot)
   }, []);
 
   const toggleValue = (setter, value, string) => {
@@ -70,19 +72,19 @@ const Config = ({ config }) => {
         </div>
         <div className="info-text">
           <div>Input Path Root:</div>
-          <div>{config.integrationInputPathRoot}</div>
+          <div className="path">{inputPathRoot}</div>
         </div>
         <div className="info-text">
           <div>Output Path Root:</div>
-          <div>{config.integrationOutputPathRoot}</div>
+          <div className="path">{config.integrationOutputPathRoot}</div>
         </div>
         <div className="info-text">
           <div>CustomerPath:</div>
-          <div>{config.integrationCustomerPath}</div>
+          <div className="path">{config.integrationCustomerPath}</div>
         </div>
         <div className="info-text">
           <div>JSON path:</div>
-          <div>{config.integrationJsonPath}</div>
+          <div className="path">{config.integrationJsonPath}</div>
         </div>
         <div className="info-checkbox">
           <label>

@@ -28,16 +28,18 @@ const fs = require('fs');
 var childProcess = require('child_process');
 const { spawn } = require('child_process');
 var util = require('util');
+const Store = require('electron-store');
+const store = new Store();
 
-fs.readFile('../settings', 'utf8', function (err, data) {
-  if (err) {
-    return console.log(err);
-  }
-  console.log("============================ START =========================")
-  console.log(data.replace('builderPath: ', ''));
-  config.builderPath = data.replace('builderPath: ', '');
-  console.log(config.builderPath)
-});
+if (store.get('builder-path')) {
+  console.log("================= BUILDER PATH FROM STORE ========================")
+  console.log(store.get('builder-path'))
+} else {
+  console.log("=============== NO STORE BUILDER PATH ===============")
+  console.log(store.get('builder-path'));
+}
+
+
 
 let tagsBowl
 let configBowl;
@@ -61,33 +63,13 @@ ipcMain.on('ipc-example', async (event, arg) => {
 // ================================ OSP BUILDER GUI START ==================================
 
 ipcMain.on('get-builder-path', async (event, arg) => {
-  event.reply('get-builder-path', config.builderPath);
+  event.reply('get-builder-path', store.get('builder-path'));
 });
 
 // ------ READ THE TAGS.BOWL -------
-// ipcMain.on('get-tags', async (event, arg) => {
-//   tagsBowl = config.builderPath + 'tags.bowl';
-//   console.log(tagsBowl)
-//   const tags = {};
-//   const allFileContents = fs.readFileSync(tagsBowl, 'utf-8');
-//   allFileContents.split(/\r?\n/).forEach((line) => {
-//     if (line.startsWith('VAR ')) {
-//       line = line.substring(4);
-//       const tagKeys = line
-//         .substring(0, line.indexOf(' ') + 1)
-//         .replace('tag', '')
-//         .replace(' ', '');
-//       const tagValues = line
-//         .substring(line.indexOf(' ') + 1)
-//         .replaceAll('"', '');
-//       tags[tagKeys] = tagValues;
-//     }
-//   });
-//   event.reply('get-tags', tags);
-// });
 
 ipcMain.on('get-tags', async (event, arg) => {
-  tagsBowl = config.builderPath + 'tags.bowl';
+  tagsBowl = store.get('builder-path') + 'tags.bowl';
   console.log(tagsBowl);
   const tags = {};
     fs.readFile(tagsBowl, 'utf8', function (err, data) {
@@ -116,51 +98,58 @@ ipcMain.on('get-tags', async (event, arg) => {
 
 
 // ------ READ THE CONFIG.BOWL -------
+
 ipcMain.on('get-config', async (event, arg) => {
-  configBowl = config.builderPath + 'config.bowl';
-  const tags = {};
-  const allFileContents = fs.readFileSync(configBowl, 'utf-8');
-  allFileContents.split(/\r?\n/).forEach((line) => {
+  configBowl = store.get('builder-path') + 'config.bowl';
+  const conf = {};
+  fs.readFile(configBowl, 'utf8', function (err, data) {
+    if (err) {
+      event.reply('get-config', 'no config');
+      return console.log(err);
+    }
+
+  data.split(/\r?\n/).forEach((line) => {
     if (line.startsWith('VAR ')) {
       line = line.substring(4);
-      const tagKeys = line
+      const confKeys = line
         .substring(0, line.indexOf(' ') + 1)
         .replace('tag', '')
         .replace(' ', '');
-      const tagValues = line
+      const confValues = line
         .substring(line.indexOf(' ') + 1)
         .replaceAll('"', '');
-      if (tagValues === 'true') {
-        tags[tagKeys] = true;
-      } else if (tagValues === 'false') {
-        tags[tagKeys] = false;
+      if (confValues === 'true') {
+        conf[confKeys] = true;
+      } else if (confValues === 'false') {
+        conf[confKeys] = false;
       } else {
-        tags[tagKeys] = tagValues;
+        conf[confKeys] = confValues;
       }
     }
     if (line.startsWith('CONST ')) {
       line = line.substring(6);
-      const tagKeys = line
+      const confKeys = line
         .substring(0, line.indexOf(' ') + 1)
         .replace('tag', '')
         .replace(' ', '');
-      const tagValues = line
+      const confValues = line
         .substring(line.indexOf(' ') + 1)
         .replaceAll('"', '');
-      if (tagValues === 'true') {
-        tags[tagKeys] = true;
-      } else if (tagValues === 'false') {
-        tags[tagKeys] = false;
+      if (confValues === 'true') {
+        conf[confKeys] = true;
+      } else if (confValues === 'false') {
+        conf[confKeys] = false;
       } else {
-        tags[tagKeys] = tagValues;
+        conf[confKeys] = confValues;
       }
     }
   });
-  // tags.testValue = true
-  event.reply('get-config', tags);
+    console.log(conf);
+    event.reply('get-config', conf);
+  });
 });
 
-// ------ READ THE TAGS.BOWL -------
+// ------ TOGGLE CONFIG VALUE -------
 ipcMain.on('toggle-config-value', async (event, arg) => {
   console.log('=========== CHANGING INTEGRATION =============');
   fs.readFile(configBowl, 'utf8', function (err, data) {
@@ -251,11 +240,11 @@ let child = null;
 
 ipcMain.on('run-script', async (event, arg) => {
   var log_file = fs.createWriteStream(
-    config.builderPath + 'testscriptlog.log',
+    store.get('builder-path') + arg + '.log',
     { flags: 'w' }
   );
-  child = spawn('node', [config.builderPath + 'testscript.js'], {
-    cwd: config.builderPath,
+  child = spawn('node', [store.get('builder-path') + 'testscript.js'], {
+    cwd: store.get('builder-path'),
     detached: false,
   });
   child.stdout.on('data', (data) => {
@@ -276,7 +265,6 @@ ipcMain.on('run-script', async (event, arg) => {
 });
 
 ipcMain.on('kill-script', (event, data) => {
-  // kill(child.pid, 'SIGKILL');
   child.stdin.pause();
   child.kill();
 });
@@ -289,8 +277,7 @@ ipcMain.on('open-dialog-builder-path', async (event) => {
     .then((result) => {
       var basepath = app.getAppPath();
       console.log(basepath);
-      updateConfigFile(result.filePaths[0] + '/');
-
+      store.set('builder-path', result.filePaths + '/');
       event.reply('open-dialog-builder-path', result.filePaths + '/');
       event.reply('get-builder-path', result.filePaths + '/');
     })
@@ -299,32 +286,6 @@ ipcMain.on('open-dialog-builder-path', async (event) => {
     });
 });
 
-const updateConfigFile = (newPath) => {
-  console.log('Updating Config File');
-  fs.readFile('../settings', 'utf8', function (err, data) {
-    if (err) {
-      return console.log(err);
-    }
-    console.log(data);
-
-    var lineToReplace = 'builderPath: ' + config.builderPath;
-    var replacer = 'builderPath: ' + newPath;
-
-    console.log(lineToReplace);
-    console.log(replacer);
-
-    var re = new RegExp(lineToReplace, 'g');
-
-    var result = data.replace(re, replacer);
-
-    fs.writeFile('../settings', result, 'utf8', function (err) {
-      if (err) return console.log(err);
-      console.log(newPath)
-      config.builderPath = newPath;
-      console.log(config.builderPath)
-    });
-  });
-};
 
 // ================================ OSP BUILDER GUI END ====================================
 
