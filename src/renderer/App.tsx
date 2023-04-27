@@ -94,7 +94,7 @@ function Hello() {
 
   return (
     <div className="container">
-      <div className="title">OSP BUILDER {logName}</div>
+      <div className="title">OSP BUILDER</div>
       {state === 'settings' && (
         <Settings
           onClose={() => setState('config')}

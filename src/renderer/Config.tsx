@@ -4,7 +4,10 @@ import './Config.css';
 const Config = ({ config }) => {
   const [integration, setIntegration] = useState(false);
   const [inboxVolume, setInboxVolume] = useState(false);
-  const [inputPathRoot, setInputPathRoot] = useState('')
+  const [inputPathRoot, setInputPathRoot] = useState('');
+  const [outputPathRoot, setOutputPathRoot] = useState('');
+  const [jsonPath, setJsonPath] = useState('');
+  const [customerPath, setCustomerPath] = useState('');
   const [skipcreatestage, setSkipcreatestage] = useState(false);
   const [skipgit, setSkipgit] = useState(false);
   const [skipupdateconfigs, setSkipupdateconfigs] = useState(false);
@@ -27,7 +30,10 @@ const Config = ({ config }) => {
     setSkipdop(config.skipdop);
     setSkipcontent(config.skipcontent);
     setSkiphtml(config.skiphtml);
-    setInputPathRoot(config.integrationInputPathRoot)
+    setInputPathRoot(config.integrationInputPathRoot);
+    setOutputPathRoot(config.integrationOutputPathRoot);
+    setJsonPath(config.integrationJsonPath);
+    setCustomerPath(config.integrationCustomerPath);
   }, []);
 
   const toggleValue = (setter, value, string) => {
@@ -39,6 +45,27 @@ const Config = ({ config }) => {
       string,
     ]);
   };
+
+  const selectPath = (path) => {
+    console.log('----- selecting config path -------');
+    window.electron.ipcRenderer.sendMessage('select-config-path', path);
+  };
+
+  window.electron.ipcRenderer.once('select-config-path', (arg) => {
+    console.log('--------config path from main---------');
+    console.log(arg);
+    if (arg.pathType === 'integrationInputPathRoot') {
+      setInputPathRoot(arg.path);
+    } else if (arg.pathType === 'integrationOutputPathRoot') {
+      setOutputPathRoot(arg.path);
+    } else if (arg.pathType === 'integrationCustomerPath') {
+      setCustomerPath(arg.path);
+    } else if (arg.pathType === 'integrationJsonPath') {
+      setJsonPath(arg.path);
+    } else {
+      console.log('No path selected');
+    }
+  });
 
   return (
     <div className="info-module">
@@ -72,19 +99,59 @@ const Config = ({ config }) => {
         </div>
         <div className="info-text">
           <div>Input Path Root:</div>
-          <div className="path">{inputPathRoot}</div>
+          <div
+            className="path"
+            onDoubleClick={() =>
+              selectPath({
+                pathType: 'integrationInputPathRoot',
+                oldPath: inputPathRoot,
+              })
+            }
+          >
+            {inputPathRoot}
+          </div>
         </div>
         <div className="info-text">
           <div>Output Path Root:</div>
-          <div className="path">{config.integrationOutputPathRoot}</div>
+          <div
+            className="path"
+            onDoubleClick={() =>
+              selectPath({
+                pathType: 'integrationOutputPathRoot',
+                oldPath: outputPathRoot,
+              })
+            }
+          >
+            {outputPathRoot}
+          </div>
         </div>
         <div className="info-text">
           <div>CustomerPath:</div>
-          <div className="path">{config.integrationCustomerPath}</div>
+          <div
+            className="path"
+            onDoubleClick={() =>
+              selectPath({
+                pathType: 'integrationCustomerPath',
+                oldPath: customerPath,
+              })
+            }
+          >
+            {customerPath}
+          </div>
         </div>
         <div className="info-text">
           <div>JSON path:</div>
-          <div className="path">{config.integrationJsonPath}</div>
+          <div
+            className="path"
+            onDoubleClick={() =>
+              selectPath({
+                pathType: 'integrationJsonPath',
+                oldPath: jsonPath,
+              })
+            }
+          >
+            {jsonPath}
+          </div>
         </div>
         <div className="info-checkbox">
           <label>

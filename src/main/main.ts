@@ -32,16 +32,16 @@ const Store = require('electron-store');
 const store = new Store();
 
 if (store.get('builder-path')) {
-  console.log("================= BUILDER PATH FROM STORE ========================")
-  console.log(store.get('builder-path'))
+  console.log(
+    '================= BUILDER PATH FROM STORE ========================'
+  );
+  console.log(store.get('builder-path'));
 } else {
-  console.log("=============== NO STORE BUILDER PATH ===============")
+  console.log('=============== NO STORE BUILDER PATH ===============');
   console.log(store.get('builder-path'));
 }
 
-
-
-let tagsBowl
+let tagsBowl;
 let configBowl;
 
 class AppUpdater {
@@ -72,9 +72,9 @@ ipcMain.on('get-tags', async (event, arg) => {
   tagsBowl = store.get('builder-path') + 'tags.bowl';
   console.log(tagsBowl);
   const tags = {};
-    fs.readFile(tagsBowl, 'utf8', function (err, data) {
+  fs.readFile(tagsBowl, 'utf8', function (err, data) {
     if (err) {
-      event.reply('get-tags', "no tags");
+      event.reply('get-tags', 'no tags');
       return console.log(err);
     }
 
@@ -91,11 +91,10 @@ ipcMain.on('get-tags', async (event, arg) => {
         tags[tagKeys] = tagValues;
       }
     });
-    console.log(tags)
+    console.log(tags);
     event.reply('get-tags', tags);
-  })
-})
-
+  });
+});
 
 // ------ READ THE CONFIG.BOWL -------
 
@@ -108,42 +107,42 @@ ipcMain.on('get-config', async (event, arg) => {
       return console.log(err);
     }
 
-  data.split(/\r?\n/).forEach((line) => {
-    if (line.startsWith('VAR ')) {
-      line = line.substring(4);
-      const confKeys = line
-        .substring(0, line.indexOf(' ') + 1)
-        .replace('tag', '')
-        .replace(' ', '');
-      const confValues = line
-        .substring(line.indexOf(' ') + 1)
-        .replaceAll('"', '');
-      if (confValues === 'true') {
-        conf[confKeys] = true;
-      } else if (confValues === 'false') {
-        conf[confKeys] = false;
-      } else {
-        conf[confKeys] = confValues;
+    data.split(/\r?\n/).forEach((line) => {
+      if (line.startsWith('VAR ')) {
+        line = line.substring(4);
+        const confKeys = line
+          .substring(0, line.indexOf(' ') + 1)
+          .replace('tag', '')
+          .replace(' ', '');
+        const confValues = line
+          .substring(line.indexOf(' ') + 1)
+          .replaceAll('"', '');
+        if (confValues === 'true') {
+          conf[confKeys] = true;
+        } else if (confValues === 'false') {
+          conf[confKeys] = false;
+        } else {
+          conf[confKeys] = confValues;
+        }
       }
-    }
-    if (line.startsWith('CONST ')) {
-      line = line.substring(6);
-      const confKeys = line
-        .substring(0, line.indexOf(' ') + 1)
-        .replace('tag', '')
-        .replace(' ', '');
-      const confValues = line
-        .substring(line.indexOf(' ') + 1)
-        .replaceAll('"', '');
-      if (confValues === 'true') {
-        conf[confKeys] = true;
-      } else if (confValues === 'false') {
-        conf[confKeys] = false;
-      } else {
-        conf[confKeys] = confValues;
+      if (line.startsWith('CONST ')) {
+        line = line.substring(6);
+        const confKeys = line
+          .substring(0, line.indexOf(' ') + 1)
+          .replace('tag', '')
+          .replace(' ', '');
+        const confValues = line
+          .substring(line.indexOf(' ') + 1)
+          .replaceAll('"', '');
+        if (confValues === 'true') {
+          conf[confKeys] = true;
+        } else if (confValues === 'false') {
+          conf[confKeys] = false;
+        } else {
+          conf[confKeys] = confValues;
+        }
       }
-    }
-  });
+    });
     console.log(conf);
     event.reply('get-config', conf);
   });
@@ -152,6 +151,7 @@ ipcMain.on('get-config', async (event, arg) => {
 // ------ TOGGLE CONFIG VALUE -------
 ipcMain.on('toggle-config-value', async (event, arg) => {
   console.log('=========== CHANGING INTEGRATION =============');
+  configBowl = store.get('builder-path') + 'config.bowl';
   fs.readFile(configBowl, 'utf8', function (err, data) {
     if (err) {
       return console.log(err);
@@ -178,6 +178,7 @@ ipcMain.on('toggle-config-value', async (event, arg) => {
 
 ipcMain.on('toggle-tags-value', async (event, arg) => {
   console.log('=========== CHANGING TAGS =============');
+  tagsBowl = store.get('builder-path') + 'tags.bowl';
   fs.readFile(tagsBowl, 'utf8', function (err, data) {
     if (err) {
       return console.log(err);
@@ -204,6 +205,7 @@ ipcMain.on('toggle-tags-value', async (event, arg) => {
 
 ipcMain.on('change-text-tags-value', async (event, arg) => {
   console.log('=========== CHANGING TAGS TEXT =============');
+  tagsBowl = store.get('builder-path') + 'tags.bowl';
   fs.readFile(tagsBowl, 'utf8', function (err, data) {
     if (err) {
       return console.log(err);
@@ -282,7 +284,50 @@ ipcMain.on('open-dialog-builder-path', async (event) => {
       event.reply('get-builder-path', result.filePaths + '/');
     })
     .catch((err) => {
-      console.log(err); 
+      console.log(err);
+    });
+});
+
+ipcMain.on('select-config-path', async (event, arg) => {
+  const reply = {
+    pathType: arg.pathType,
+    path: '',
+  };
+  configBowl = store.get('builder-path') + 'config.bowl';
+  dialog
+    .showOpenDialog(mainWindow, {
+      properties: ['openDirectory'],
+    })
+    .then((result) => {
+      reply.path = `${result.filePaths}`;
+
+      fs.readFile(configBowl, 'utf8', function (err, data) {
+        if (err) {
+          return console.log(err);
+        }
+        console.log(data);
+        console.log(arg);
+
+        var lineToReplace = arg.pathType + ' "' + arg.oldPath + '"';
+        var replacer = arg.pathType + ' "' + reply.path + '"';
+
+        console.log(lineToReplace);
+        console.log(replacer);
+
+        var re = new RegExp(lineToReplace, 'g');
+
+        var result = data.replace(re, replacer);
+
+        fs.writeFile(configBowl, result, 'utf8', function (err) {
+          if (err) return console.log(err);
+          event.reply('select-config-path', reply);
+        });
+      });
+
+      // event.reply('select-config-path', reply);
+    })
+    .catch((err) => {
+      console.log(err);
     });
 });
 

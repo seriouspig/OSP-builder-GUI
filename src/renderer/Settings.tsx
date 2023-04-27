@@ -6,7 +6,6 @@ const Settings = (props) => {
   return (
     <div>
       <div className="info-container">
-        <button>save settings</button>
         <button onClick={props.onClose}>close</button>
       </div>
       <div className="path-selector">
