@@ -9,19 +9,38 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, ipcRenderer } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  shell,
+  ipcMain,
+  ipcRenderer,
+  dialog,
+  remote,
+} from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import config from './../builderConfig';
 
 const fs = require('fs');
 var childProcess = require('child_process');
 const { spawn } = require('child_process');
 var util = require('util');
 
-const tagsBowl = '/Users/piotrgryko/Downloads/OSP_builder_gui/tags.bowl';
-const configBowl = '/Users/piotrgryko/Downloads/OSP_builder_gui/config.bowl';
+fs.readFile('../settings', 'utf8', function (err, data) {
+  if (err) {
+    return console.log(err);
+  }
+  console.log("============================ START =========================")
+  console.log(data.replace('builderPath: ', ''));
+  config.builderPath = data.replace('builderPath: ', '');
+  console.log(config.builderPath)
+});
+
+let tagsBowl
+let configBowl;
 
 class AppUpdater {
   constructor() {
@@ -41,28 +60,64 @@ ipcMain.on('ipc-example', async (event, arg) => {
 
 // ================================ OSP BUILDER GUI START ==================================
 
-// ------ READ THE TAGS.BOWL -------
-ipcMain.on('get-tags', async (event, arg) => {
-  const tags = {};
-  const allFileContents = fs.readFileSync(tagsBowl, 'utf-8');
-  allFileContents.split(/\r?\n/).forEach((line) => {
-    if (line.startsWith('VAR ')) {
-      line = line.substring(4);
-      const tagKeys = line
-        .substring(0, line.indexOf(' ') + 1)
-        .replace('tag', '')
-        .replace(' ', '');
-      const tagValues = line
-        .substring(line.indexOf(' ') + 1)
-        .replaceAll('"', '');
-      tags[tagKeys] = tagValues;
-    }
-  });
-  event.reply('get-tags', tags);
+ipcMain.on('get-builder-path', async (event, arg) => {
+  event.reply('get-builder-path', config.builderPath);
 });
+
+// ------ READ THE TAGS.BOWL -------
+// ipcMain.on('get-tags', async (event, arg) => {
+//   tagsBowl = config.builderPath + 'tags.bowl';
+//   console.log(tagsBowl)
+//   const tags = {};
+//   const allFileContents = fs.readFileSync(tagsBowl, 'utf-8');
+//   allFileContents.split(/\r?\n/).forEach((line) => {
+//     if (line.startsWith('VAR ')) {
+//       line = line.substring(4);
+//       const tagKeys = line
+//         .substring(0, line.indexOf(' ') + 1)
+//         .replace('tag', '')
+//         .replace(' ', '');
+//       const tagValues = line
+//         .substring(line.indexOf(' ') + 1)
+//         .replaceAll('"', '');
+//       tags[tagKeys] = tagValues;
+//     }
+//   });
+//   event.reply('get-tags', tags);
+// });
+
+ipcMain.on('get-tags', async (event, arg) => {
+  tagsBowl = config.builderPath + 'tags.bowl';
+  console.log(tagsBowl);
+  const tags = {};
+    fs.readFile(tagsBowl, 'utf8', function (err, data) {
+    if (err) {
+      event.reply('get-tags', "no tags");
+      return console.log(err);
+    }
+
+    data.split(/\r?\n/).forEach((line) => {
+      if (line.startsWith('VAR ')) {
+        line = line.substring(4);
+        const tagKeys = line
+          .substring(0, line.indexOf(' ') + 1)
+          .replace('tag', '')
+          .replace(' ', '');
+        const tagValues = line
+          .substring(line.indexOf(' ') + 1)
+          .replaceAll('"', '');
+        tags[tagKeys] = tagValues;
+      }
+    });
+    console.log(tags)
+    event.reply('get-tags', tags);
+  })
+})
+
 
 // ------ READ THE CONFIG.BOWL -------
 ipcMain.on('get-config', async (event, arg) => {
+  configBowl = config.builderPath + 'config.bowl';
   const tags = {};
   const allFileContents = fs.readFileSync(configBowl, 'utf-8');
   allFileContents.split(/\r?\n/).forEach((line) => {
@@ -192,17 +247,17 @@ ipcMain.on('change-text-tags-value', async (event, arg) => {
 });
 
 // ------ RUN BUILD SCRIPT -------
-let child = null
+let child = null;
 
 ipcMain.on('run-script', async (event, arg) => {
   var log_file = fs.createWriteStream(
-    '/Users/piotrgryko/repos/OSP-builder-gui/osp-builder-gui/testscriptlog.log',
+    config.builderPath + 'testscriptlog.log',
     { flags: 'w' }
   );
-  child = spawn('node', [
-    '/Users/piotrgryko/repos/OSP-builder-gui/osp-builder-gui/testscript.js',
-    { cwd: null, detached: false },
-  ]);
+  child = spawn('node', [config.builderPath + 'testscript.js'], {
+    cwd: config.builderPath,
+    detached: false,
+  });
   child.stdout.on('data', (data) => {
     console.log(`child stdout: ${data}`);
     // event.sender.send('start-logging', 'Start logging');
@@ -222,9 +277,54 @@ ipcMain.on('run-script', async (event, arg) => {
 
 ipcMain.on('kill-script', (event, data) => {
   // kill(child.pid, 'SIGKILL');
-      child.stdin.pause();
-      child.kill();
+  child.stdin.pause();
+  child.kill();
 });
+
+ipcMain.on('open-dialog-builder-path', async (event) => {
+  dialog
+    .showOpenDialog(mainWindow, {
+      properties: ['openDirectory'],
+    })
+    .then((result) => {
+      var basepath = app.getAppPath();
+      console.log(basepath);
+      updateConfigFile(result.filePaths[0] + '/');
+
+      event.reply('open-dialog-builder-path', result.filePaths + '/');
+      event.reply('get-builder-path', result.filePaths + '/');
+    })
+    .catch((err) => {
+      console.log(err); 
+    });
+});
+
+const updateConfigFile = (newPath) => {
+  console.log('Updating Config File');
+  fs.readFile('../settings', 'utf8', function (err, data) {
+    if (err) {
+      return console.log(err);
+    }
+    console.log(data);
+
+    var lineToReplace = 'builderPath: ' + config.builderPath;
+    var replacer = 'builderPath: ' + newPath;
+
+    console.log(lineToReplace);
+    console.log(replacer);
+
+    var re = new RegExp(lineToReplace, 'g');
+
+    var result = data.replace(re, replacer);
+
+    fs.writeFile('../settings', result, 'utf8', function (err) {
+      if (err) return console.log(err);
+      console.log(newPath)
+      config.builderPath = newPath;
+      console.log(config.builderPath)
+    });
+  });
+};
 
 // ================================ OSP BUILDER GUI END ====================================
 

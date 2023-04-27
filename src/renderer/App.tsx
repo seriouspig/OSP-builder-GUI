@@ -1,10 +1,9 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import icon from '../../assets/icon.svg';
 import './App.css';
 import { useEffect, useState } from 'react';
 import Tags from './Tags';
 import Config from './Config';
-import { use } from 'matter';
+import Settings from './Settings';
 
 function Hello() {
   const [tags, setTags] = useState({});
@@ -13,6 +12,14 @@ function Hello() {
   const [tagsLoaded, setTagsLoaded] = useState(false);
   const [state, setState] = useState('config');
   const [log, setLog] = useState('');
+  const [builderPath, setBuilderPath] = useState('');
+
+  useEffect(() => {
+    console.log('State Changed');
+    window.electron.ipcRenderer.sendMessage('get-builder-path');
+    window.electron.ipcRenderer.sendMessage('get-tags');
+    window.electron.ipcRenderer.sendMessage('get-config');
+  }, [state]);
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-tags');
@@ -22,11 +29,19 @@ function Hello() {
     window.electron.ipcRenderer.sendMessage('get-config');
   }, []);
 
+  useEffect(() => {
+    window.electron.ipcRenderer.sendMessage('get-builder-path');
+  }, []);
+
   window.electron.ipcRenderer.once('get-tags', (arg) => {
-    setTags(arg);
-    console.log('Here are the tags:');
-    console.log(arg);
-    setTagsLoaded(true);
+    if (arg !== 'no tags') {
+      setTags(arg);
+      setTagsLoaded(true);
+    } else {
+      console.log('Here are the tags:');
+      console.log(arg);
+      setTagsLoaded(false);
+    }
   });
 
   window.electron.ipcRenderer.once('get-config', (arg) => {
@@ -36,10 +51,11 @@ function Hello() {
     setConfigLoaded(true);
   });
 
-  const updateConfig = () => {
-    console.log('------ Config Updated ------');
-    // window.electron.ipcRenderer.sendMessage('set-integration', 'DUUUPPPPAAAA');
-  };
+  window.electron.ipcRenderer.once('get-builder-path', (arg) => {
+    console.log('--------builder path---------');
+    console.log(arg);
+    setBuilderPath(arg);
+  });
 
   const toggleBuild = () => {
     if (state === 'config') {
@@ -58,15 +74,35 @@ function Hello() {
     setLog(`${log}${arg}`);
   });
 
+  const handleSelectBuilderPath = () => {
+    console.log('=========SHOULD OPEN WINDOW=============');
+    window.electron.ipcRenderer.sendMessage('open-dialog-builder-path');
+  };
+
+  window.electron.ipcRenderer.on('open-dialog-builder-path', (arg) => {
+    setBuilderPath(arg);
+  });
+
   return (
     <div className="container">
       <div className="title">OSP BUILDER</div>
+      {state === 'settings' && (
+        <Settings
+          onClose={() => setState('config')}
+          builderPath={builderPath}
+          selectBuilderPath={handleSelectBuilderPath}
+        />
+      )}
+
+      {state === 'config' && (
+        <button className="btn-config" onClick={() => setState('settings')}>
+          Settings
+        </button>
+      )}
       {state === 'config' && (
         <div className="info-container">
           {tagsLoaded && <Tags tags={tags} />}
-          {configLoaded && (
-            <Config config={config} updateConfig={updateConfig} />
-          )}
+          {configLoaded && <Config config={config} />}
           <button onClick={toggleBuild}>Build</button>
         </div>
       )}

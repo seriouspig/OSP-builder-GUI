@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Config.css';
 
-const Config = ({ config, updateConfig }) => {
+const Config = ({ config }) => {
   const [integration, setIntegration] = useState(false);
   const [inboxVolume, setInboxVolume] = useState(false);
   const [skipcreatestage, setSkipcreatestage] = useState(false);

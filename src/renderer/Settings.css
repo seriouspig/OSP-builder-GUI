@@ -1,0 +1,21 @@
+.path-selector {
+  display: flex;
+  justify-content: space-between;
+  max-width: 90%;
+  margin: 0 auto;
+  margin-top: 1rem;
+}
+
+.btn-path {
+  border: 1px solid black;
+  background: var(--clr-grey-7);
+  color: var(--clr-grey-8);
+  width: 58%;
+  min-height: 50px;
+  overflow-wrap: break-word;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-style: italic;
+  padding: 0.1rem;
+  box-shadow: var(--inset-shadow);
+}
