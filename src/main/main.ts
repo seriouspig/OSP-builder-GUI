@@ -353,6 +353,22 @@ ipcMain.on('backup-tags', async (event, arg) => {
 
 });
 
+ipcMain.on('load-tags', async (event, arg) => {
+  let options = {
+    properties: ['openFile'],
+    filters: [{ name: 'Custom File Type', extensions: ['bowl'] }],
+  };
+  dialog.showOpenDialog(mainWindow, options).then((result) => {
+    console.log(result.filePaths[0]);
+    tagsBowl = store.get('builder-path') + 'tags.bowl';
+    // File destination.txt will be created or overwritten by default.
+    fs.copyFile(result.filePaths[0], tagsBowl, (err) => {
+      if (err) throw err;
+      event.reply('load-tags', 'Tags loaded');
+    });
+  });
+});
+
 
 // ================================ OSP BUILDER GUI END ====================================
 

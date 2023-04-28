@@ -5,6 +5,8 @@ import Tags from './Tags';
 import Config from './Config';
 import Settings from './Settings';
 import Log from './Log';
+import { ipcRenderer } from 'electron/renderer';
+import { electron } from 'process';
 
 function Hello() {
   const [tags, setTags] = useState({});
@@ -15,7 +17,7 @@ function Hello() {
   const [log, setLog] = useState('');
   const [builderPath, setBuilderPath] = useState('');
   const [logName, setLogName] = useState('Log name ...');
-  
+  const [tagsImporting, setTagsImporting] = useState(false);
 
   useEffect(() => {
     console.log('State Changed');
@@ -36,34 +38,55 @@ function Hello() {
     window.electron.ipcRenderer.sendMessage('get-builder-path');
   }, []);
 
-  window.electron.ipcRenderer.once('get-tags', (arg) => {
-    if (arg !== 'no tags') {
-      setTags(arg);
-      setTagsLoaded(true);
-    } else {
-      console.log('Here are the tags:');
+  useEffect(() => {
+    window.electron.ipcRenderer.on('get-tags', (arg) => {
+      console.log('GETTING TAGS');
+
       console.log(arg);
-      setTagsLoaded(false);
-    }
+      if (arg !== 'no tags') {
+        setTags(arg);
+        setState('config');
+        setTagsLoaded(true);
+      } else {
+        console.log('Here are the tags:');
+        console.log(arg);
+        setTagsLoaded(false);
+      }
+    });
+
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners('get-tags');
+    };
   });
 
-  window.electron.ipcRenderer.once('get-config', (arg) => {
-    if (arg !== 'no config') {
-      setConfig(arg);
-      console.log('Here is the config:');
-      console.log(arg);
-      setConfigLoaded(true);
-    } else {
-      console.log('Here is the config:');
-      console.log(arg);
-      setConfigLoaded(false);
-    }
+  useEffect(() => {
+    window.electron.ipcRenderer.on('get-config', (arg) => {
+      if (arg !== 'no config') {
+        setConfig(arg);
+        console.log('Here is the config:');
+        console.log(arg);
+        setConfigLoaded(true);
+      } else {
+        console.log('Here is the config:');
+        console.log(arg);
+        setConfigLoaded(false);
+      }
+    });
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners('get-config');
+    };
   });
 
-  window.electron.ipcRenderer.once('get-builder-path', (arg) => {
-    console.log('--------builder path---------');
-    console.log(arg);
-    setBuilderPath(arg);
+  useEffect(() => {
+    window.electron.ipcRenderer.on('get-builder-path', (arg) => {
+      console.log('--------builder path---------');
+      console.log(arg);
+      setBuilderPath(arg);
+      window.electron.ipcRenderer.removeAllListeners('get-builder-path');
+    });
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners('get-builder-path');
+    };
   });
 
   const toggleBuild = () => {
@@ -77,10 +100,15 @@ function Hello() {
     }
   };
 
-  window.electron.ipcRenderer.on('output', (arg) => {
-    console.log('Here is the log:');
-    console.log(arg);
-    setLog(`${log}${arg}`);
+  useEffect(() => {
+    window.electron.ipcRenderer.on('output', (arg) => {
+      console.log('Here is the log:');
+      console.log(arg);
+      setLog(`${log}${arg}`);
+    });
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners('output');
+    };
   });
 
   const handleSelectBuilderPath = () => {
@@ -88,18 +116,48 @@ function Hello() {
     window.electron.ipcRenderer.sendMessage('open-dialog-builder-path');
   };
 
-  window.electron.ipcRenderer.on('open-dialog-builder-path', (arg) => {
-    setBuilderPath(arg);
+  useEffect(() => {
+    window.electron.ipcRenderer.on('open-dialog-builder-path', (arg) => {
+      setBuilderPath(arg);
+    });
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners(
+        'open-dialog-builder-path'
+      );
+    };
   });
 
   const backupTags = () => {
-    console.log("Backing up tags")
+    console.log('Backing up tags');
     window.electron.ipcRenderer.sendMessage('backup-tags');
-  }
+  };
 
+  useEffect(() => {
     window.electron.ipcRenderer.on('backup-tags', (arg) => {
-      console.log(arg)
+      console.log(arg);
     });
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners('backup-tags');
+    };
+  });
+
+  const loadTags = () => {
+    console.log('Loading tags');
+    window.electron.ipcRenderer.sendMessage('load-tags');
+  };
+
+  useEffect(() => {
+    window.electron.ipcRenderer.on('load-tags', (arg) => {
+      setState('loading')
+      console.log('Seding ');
+      window.electron.ipcRenderer.sendMessage('get-tags');
+      console.log(arg);
+    });
+
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners('load-tags');
+    };
+  });
 
   return (
     <div className="container">
@@ -119,11 +177,16 @@ function Hello() {
       )}
       {state === 'config' && (
         <div className="info-container">
-          <div>{tagsLoaded && <Tags tags={tags} backupTags={backupTags}/>}
-          <Log logName={logName} saveLogName={(name) => setLogName(name)}/>
+          <div>
+            {tagsLoaded && (
+              <Tags tags={tags} backupTags={backupTags} loadTags={loadTags} />
+            )}
+            <Log logName={logName} saveLogName={(name) => setLogName(name)} />
           </div>
           <div>{configLoaded && <Config config={config} />}</div>
-          {(tagsLoaded && configLoaded) && <button onClick={toggleBuild}>Build</button>}
+          {tagsLoaded && configLoaded && (
+            <button onClick={toggleBuild}>Build</button>
+          )}
         </div>
       )}
       {state === 'build' && (

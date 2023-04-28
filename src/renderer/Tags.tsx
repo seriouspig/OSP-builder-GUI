@@ -3,7 +3,7 @@ import './Tags.css';
 import ElementMaker from './ElementMaker';
 import { config } from 'process';
 
-const Tags = ({ tags, backupTags }) => {
+const Tags = ({ tags, backupTags, loadTags }) => {
   const [alna, setAlna] = useState('');
   const [customerName, setCustomerName] = useState({old: '', new: ''});
   const [customerTag, setCustomerTag] = useState({ old: '', new: '' });
@@ -306,7 +306,7 @@ const Tags = ({ tags, backupTags }) => {
           />
         </div>
         <button className="btn-config" onClick={backupTags}>Backup tags</button>
-        <button className="btn-config">Load tags</button>
+        <button className="btn-config" onClick={loadTags}>Load tags</button>
       </div>
     </div>
   );
