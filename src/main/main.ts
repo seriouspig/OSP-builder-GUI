@@ -331,6 +331,28 @@ ipcMain.on('select-config-path', async (event, arg) => {
     });
 });
 
+ipcMain.on('backup-tags', async (event, arg) => {
+  let options = {
+    title: 'Save log file',
+    buttonLabel: 'Save',
+    properties: ['openDirectory'],
+    filters: [
+      { name: 'Custom File Type', extensions: ['bowl'] },
+    ],
+  };
+    dialog.showSaveDialog(mainWindow, options).then((result) => {
+      console.log(result.filePath);
+      tagsBowl = store.get('builder-path') + 'tags.bowl';
+      // File destination.txt will be created or overwritten by default.
+      fs.copyFile(tagsBowl, result.filePath, (err) => {
+        if (err) throw err;
+        event.reply('backup-tags', 'Tags backed up');
+      });
+    });
+          
+
+});
+
 
 // ================================ OSP BUILDER GUI END ====================================
 

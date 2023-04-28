@@ -3,7 +3,7 @@ import './Tags.css';
 import ElementMaker from './ElementMaker';
 import { config } from 'process';
 
-const Tags = ({ tags }) => {
+const Tags = ({ tags, backupTags }) => {
   const [alna, setAlna] = useState('');
   const [customerName, setCustomerName] = useState({old: '', new: ''});
   const [customerTag, setCustomerTag] = useState({ old: '', new: '' });
@@ -297,9 +297,7 @@ const Tags = ({ tags }) => {
           <div>WOW:</div>
           <ElementMaker
             value={wow.new}
-            handleChange={(e) =>
-              setWow({ old: wow.old, new: e.target.value })
-            }
+            handleChange={(e) => setWow({ old: wow.old, new: e.target.value })}
             handleDoubleClick={() => setEditWow(true)}
             handleBlur={() => {
               handleTextChange(setWow, wow, 'wowtag'), setEditWow(false);
@@ -307,6 +305,8 @@ const Tags = ({ tags }) => {
             showInputEle={editWow}
           />
         </div>
+        <button className="btn-config" onClick={backupTags}>Backup tags</button>
+        <button className="btn-config">Load tags</button>
       </div>
     </div>
   );

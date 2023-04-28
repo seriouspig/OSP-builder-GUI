@@ -92,6 +92,15 @@ function Hello() {
     setBuilderPath(arg);
   });
 
+  const backupTags = () => {
+    console.log("Backing up tags")
+    window.electron.ipcRenderer.sendMessage('backup-tags');
+  }
+
+    window.electron.ipcRenderer.on('backup-tags', (arg) => {
+      console.log(arg)
+    });
+
   return (
     <div className="container">
       <div className="title">OSP BUILDER</div>
@@ -110,7 +119,7 @@ function Hello() {
       )}
       {state === 'config' && (
         <div className="info-container">
-          <div>{tagsLoaded && <Tags tags={tags} />}
+          <div>{tagsLoaded && <Tags tags={tags} backupTags={backupTags}/>}
           <Log logName={logName} saveLogName={(name) => setLogName(name)}/>
           </div>
           <div>{configLoaded && <Config config={config} />}</div>
