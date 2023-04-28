@@ -173,7 +173,7 @@ ipcMain.on('toggle-config-value', async (event, arg) => {
       if (err) return console.log(err);
     });
   });
-  event.reply('toggle-config-value', 'Integration changed');
+  event.reply('toggle-config-value', arg[1]);
 });
 
 ipcMain.on('toggle-tags-value', async (event, arg) => {

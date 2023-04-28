@@ -46,25 +46,51 @@ const Config = ({ config }) => {
     ]);
   };
 
+  useEffect(() => {
+    window.electron.ipcRenderer.on('toggle-config-value', (arg) => {
+      console.log(arg);
+      if (arg === 'inboxVolume' && inboxVolume && !integration) {
+        setTimeout(() => {
+                  console.log('Shoud change integration to true');
+                  toggleValue(setIntegration, integration, 'integration');
+        }, 100)
+
+      } else if (arg === 'integration' && inboxVolume && !integration) {
+        setTimeout(() => {
+          console.log('Shoud change InboxVolume to false');
+          toggleValue(setInboxVolume, inboxVolume, 'inboxVolume');
+        }, 100);
+      }
+    });
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners('toggle-config-value');
+    };
+  });
+
   const selectPath = (path) => {
     console.log('----- selecting config path -------');
     window.electron.ipcRenderer.sendMessage('select-config-path', path);
   };
 
-  window.electron.ipcRenderer.once('select-config-path', (arg) => {
-    console.log('--------config path from main---------');
-    console.log(arg);
-    if (arg.pathType === 'integrationInputPathRoot') {
-      setInputPathRoot(arg.path);
-    } else if (arg.pathType === 'integrationOutputPathRoot') {
-      setOutputPathRoot(arg.path);
-    } else if (arg.pathType === 'integrationCustomerPath') {
-      setCustomerPath(arg.path);
-    } else if (arg.pathType === 'integrationJsonPath') {
-      setJsonPath(arg.path);
-    } else {
-      console.log('No path selected');
-    }
+  useEffect(() => {
+    window.electron.ipcRenderer.on('select-config-path', (arg) => {
+      console.log('--------config path from main---------');
+      console.log(arg);
+      if (arg.pathType === 'integrationInputPathRoot') {
+        setInputPathRoot(arg.path);
+      } else if (arg.pathType === 'integrationOutputPathRoot') {
+        setOutputPathRoot(arg.path);
+      } else if (arg.pathType === 'integrationCustomerPath') {
+        setCustomerPath(arg.path);
+      } else if (arg.pathType === 'integrationJsonPath') {
+        setJsonPath(arg.path);
+      } else {
+        console.log('No path selected');
+      }
+    });
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners('select-config-path');
+    };
   });
 
   return (

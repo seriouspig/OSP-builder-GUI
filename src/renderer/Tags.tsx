@@ -5,7 +5,7 @@ import { config } from 'process';
 
 const Tags = ({ tags, backupTags, loadTags }) => {
   const [alna, setAlna] = useState('');
-  const [customerName, setCustomerName] = useState({old: '', new: ''});
+  const [customerName, setCustomerName] = useState({ old: '', new: '' });
   const [customerTag, setCustomerTag] = useState({ old: '', new: '' });
   const [content, setContent] = useState({ old: '', new: '' });
   const [base, setBase] = useState({ old: '', new: '' });
@@ -28,7 +28,7 @@ const Tags = ({ tags, backupTags, loadTags }) => {
   const [editWow, setEditWow] = useState(false);
 
   useEffect(() => {
-    console.log("--------- RESTARTED TAGS ---------")
+    console.log('--------- RESTARTED TAGS ---------');
     setAlna(tags.alna);
     setCustomerName({
       old: tags.customerName,
@@ -72,8 +72,6 @@ const Tags = ({ tags, backupTags, loadTags }) => {
     });
   }, []);
 
-
-
   const toggleTagsValue = (setter, value, string) => {
     let newValue = '';
     if (value === '3.5.2') {
@@ -92,7 +90,7 @@ const Tags = ({ tags, backupTags, loadTags }) => {
   };
 
   const handleTextChange = (setter, value, string) => {
-    setter(value)
+    setter(value);
     let oldValue = value.old;
     console.log(string + ' ' + oldValue);
     let newValue = value.new;
@@ -104,33 +102,37 @@ const Tags = ({ tags, backupTags, loadTags }) => {
     ]);
   };
 
-  window.electron.ipcRenderer.once('change-text-tags-value', (arg) => {
+  useEffect(() => {
+    window.electron.ipcRenderer.on('change-text-tags-value', (arg) => {
+      if (arg[1] === 'customerName') {
+        setCustomerName({ old: arg[2], new: arg[2] });
+      } else if (arg[1] === 'customerTag') {
+        setCustomerTag({ old: arg[2], new: arg[2] });
+      } else if (arg[1] === 'contenttag') {
+        setContent({ old: arg[2], new: arg[2] });
+      } else if (arg[1] === 'basetag') {
+        setBase({ old: arg[2], new: arg[2] });
+      } else if (arg[1] === 'bajatag') {
+        setBaja({ old: arg[2], new: arg[2] });
+      } else if (arg[1] === 'tripmantag') {
+        setTripman({ old: arg[2], new: arg[2] });
+      } else if (arg[1] === 'mapstag') {
+        setMaps({ old: arg[2], new: arg[2] });
+      } else if (arg[1] === 'musicplayertag') {
+        setMusicplayer({ old: arg[2], new: arg[2] });
+      } else if (arg[1] === 'papausetag') {
+        setPapause({ old: arg[2], new: arg[2] });
+      } else if (arg[1] === 'wowtag') {
+        setWow({ old: arg[2], new: arg[2] });
+      }
 
-    if (arg[1] === 'customerName') {
-      setCustomerName({ old: arg[2], new: arg[2] });
-    } else if (arg[1] === 'customerTag') {
-      setCustomerTag({ old: arg[2], new: arg[2] });
-    } else if (arg[1] === 'contenttag') {
-      setContent({ old: arg[2], new: arg[2] });
-    } else if (arg[1] === 'basetag') {
-      setBase({ old: arg[2], new: arg[2] });
-    } else if (arg[1] === 'bajatag') {
-      setBaja({ old: arg[2], new: arg[2] });
-    } else if (arg[1] === 'tripmantag') {
-      setTripman({ old: arg[2], new: arg[2] });
-    } else if (arg[1] === 'mapstag') {
-      setMaps({ old: arg[2], new: arg[2] });
-    } else if (arg[1] === 'musicplayertag') {
-      setMusicplayer({ old: arg[2], new: arg[2] });
-    } else if (arg[1] === 'papausetag') {
-      setPapause({ old: arg[2], new: arg[2] });
-    } else if (arg[1] === 'wowtag') {
-      setWow({ old: arg[2], new: arg[2] });
-    }
-    
-    console.log('Here are the tags:');
-    console.log(arg);
-    
+      console.log('Here are the tags:');
+      console.log(arg);
+    });
+
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners('change-text-tags-value');
+    };
   });
 
   return (
@@ -305,8 +307,12 @@ const Tags = ({ tags, backupTags, loadTags }) => {
             showInputEle={editWow}
           />
         </div>
-        <button className="btn-config" onClick={backupTags}>Backup tags</button>
-        <button className="btn-config" onClick={loadTags}>Load tags</button>
+        <button className="btn-config" onClick={backupTags}>
+          Backup tags
+        </button>
+        <button className="btn-config" onClick={loadTags}>
+          Load tags
+        </button>
       </div>
     </div>
   );
