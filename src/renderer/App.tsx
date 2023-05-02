@@ -5,8 +5,6 @@ import Tags from './Tags';
 import Config from './Config';
 import Settings from './Settings';
 import Log from './Log';
-import { ipcRenderer } from 'electron/renderer';
-import { electron } from 'process';
 
 function Hello() {
   const [tags, setTags] = useState({});
@@ -25,10 +23,12 @@ function Hello() {
 
   useEffect(() => {
     console.log('State Changed');
-    window.electron.ipcRenderer.sendMessage('get-builder-path');
+    // window.electron.ipcRenderer.sendMessage('get-builder-path');
     window.electron.ipcRenderer.sendMessage('get-tags');
     window.electron.ipcRenderer.sendMessage('get-config');
   }, [builderPath]);
+
+
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-tags');
@@ -50,11 +50,12 @@ function Hello() {
       if (arg !== 'no tags') {
         setTags(arg);
         setState('config');
+        setTagsImporting(false)
         setTagsLoaded(true);
       } else {
         console.log('Here are the tags:');
         console.log(arg);
-        setState('config');
+
         setTagsLoaded(false);
       }
     });
@@ -150,6 +151,7 @@ function Hello() {
 
   const loadTags = () => {
     console.log('Loading tags');
+    setTagsImporting(true)
     window.electron.ipcRenderer.sendMessage('load-tags');
     
   };
