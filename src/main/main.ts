@@ -369,6 +369,19 @@ ipcMain.on('load-tags', async (event, arg) => {
   });
 });
 
+ipcMain.on('get-clients', async (event, arg) => {
+  fs.readFile(
+    '/Users/piotrgryko/repos/integration_tool/integration_gui/nodegui/react-nodegui-starter/src/components/clientconfig.json',
+    'utf8',
+    (error, data) => {
+      if (error) {
+        event.reply('get-clients', error);
+        return;
+      }
+      event.reply('get-clients', JSON.parse(data).clients);
+    }
+  );
+});
 
 // ================================ OSP BUILDER GUI END ====================================
 

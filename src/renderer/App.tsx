@@ -5,6 +5,7 @@ import Tags from './Tags';
 import Config from './Config';
 import Settings from './Settings';
 import Log from './Log';
+import DropDown from './DropDown';
 
 function Hello() {
   const [tags, setTags] = useState({});
@@ -16,10 +17,19 @@ function Hello() {
   const [builderPath, setBuilderPath] = useState('');
   const [logName, setLogName] = useState('Log name ...');
   const [tagsImporting, setTagsImporting] = useState(false);
+  const [clients, setClients] = useState([]);
+  const [selectedClient, setSelectedClient] = useState({});
 
   const [, updateState] = useState();
   const forceUpdate = useCallback(() => updateState({}), []);
 
+    window.electron.ipcRenderer.once('get-clients', (arg) => {
+      setClients(arg);
+    });
+
+    useEffect(() => {
+      window.electron.ipcRenderer.sendMessage('get-clients');
+    }, []);
 
   useEffect(() => {
     console.log('State Changed');
@@ -27,8 +37,6 @@ function Hello() {
     window.electron.ipcRenderer.sendMessage('get-tags');
     window.electron.ipcRenderer.sendMessage('get-config');
   }, [builderPath]);
-
-
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-tags');
@@ -45,12 +53,12 @@ function Hello() {
   useEffect(() => {
     window.electron.ipcRenderer.on('get-tags', (arg) => {
       console.log('GETTING TAGS');
-      setTagsLoaded(false)
+      setTagsLoaded(false);
       console.log(arg);
       if (arg !== 'no tags') {
         setTags(arg);
         setState('config');
-        setTagsImporting(false)
+        setTagsImporting(false);
         setTagsLoaded(true);
       } else {
         console.log('Here are the tags:');
@@ -96,8 +104,8 @@ function Hello() {
   });
 
   const toggleBuild = () => {
-    console.log("------------------------------")
-    console.log(state)
+    console.log('------------------------------');
+    console.log(state);
     if (state === 'config') {
       setLog('');
       window.electron.ipcRenderer.sendMessage('run-script', logName);
@@ -151,9 +159,8 @@ function Hello() {
 
   const loadTags = () => {
     console.log('Loading tags');
-    setTagsImporting(true)
+    setTagsImporting(true);
     window.electron.ipcRenderer.sendMessage('load-tags');
-    
   };
 
   useEffect(() => {
@@ -168,6 +175,14 @@ function Hello() {
       window.electron.ipcRenderer.removeAllListeners('load-tags');
     };
   });
+
+   const selectClient = (id) => {
+     for (const client of clients) {
+       if (client.id === id) {
+         setSelectedClient(client);
+       }
+     }
+   };
 
   return (
     <div className="container">
@@ -185,6 +200,11 @@ function Hello() {
           Settings
         </button>
       )}
+      <DropDown
+        menu={clients}
+        selectClient={selectClient}
+        selectedClient={selectedClient}
+      />
       {state === 'config' && (
         <div className="info-container">
           <div>
