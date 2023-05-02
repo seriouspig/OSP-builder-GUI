@@ -129,7 +129,7 @@ const Config = ({ config, selectedClient }) => {
         <div className="info-text">
           <div>Input Path Root:</div>
           <div
-            className="path"
+            className="btn-path"
             onDoubleClick={() =>
               selectPath({
                 pathType: 'integrationInputPathRoot',
@@ -143,7 +143,7 @@ const Config = ({ config, selectedClient }) => {
         <div className="info-text">
           <div>Output Path Root:</div>
           <div
-            className="path"
+            className="btn-path"
             onDoubleClick={() =>
               selectPath({
                 pathType: 'integrationOutputPathRoot',
@@ -157,7 +157,7 @@ const Config = ({ config, selectedClient }) => {
         <div className="info-text">
           <div>CustomerPath:</div>
           <div
-            className="path"
+            className="btn-path"
             onDoubleClick={() =>
               selectPath({
                 pathType: 'integrationCustomerPath',
@@ -171,7 +171,7 @@ const Config = ({ config, selectedClient }) => {
         <div className="info-text">
           <div>JSON path:</div>
           <div
-            className="path"
+            className="btn-path"
             onDoubleClick={() =>
               selectPath({
                 pathType: 'integrationJsonPath',
@@ -333,11 +333,7 @@ const Config = ({ config, selectedClient }) => {
         </div>
         <div className="info-text">
           <div>GPG Sign:</div>
-          <div
-            className="path"
-          >
-            {selectedClient.gpgSign}
-          </div>
+          <div className="path">{selectedClient.gpgSign}</div>
         </div>
       </div>
     </div>

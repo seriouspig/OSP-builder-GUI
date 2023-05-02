@@ -195,16 +195,19 @@ p {
 .info-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: 6fr 1fr;
-  margin: 1rem;
+  margin: 0 1rem;
+  
 }
 
 .info {
-  border: 1px solid black;
+  padding: 0.5rem;
 }
 
 .info-module {
     margin: 1rem;
+    margin-top: 0;
+    border: 1px black solid;
+    border-radius: var(--radius);
 }
 
 .info-text {
@@ -260,4 +263,21 @@ p {
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: 6fr 1fr;
   margin: 1rem;
+}
+
+.small-btn {
+  margin: 0.2rem;
+
+}
+
+.button-module {
+
+    margin: 1rem;
+    margin-top: 0;
+    border-radius: var(--radius);
+
+}
+
+.button-module .btn {
+  min-width: 100%;
 }

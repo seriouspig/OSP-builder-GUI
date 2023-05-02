@@ -73,7 +73,7 @@ nav {
   flex-direction: column;
   justify-content: start;
   background: rgb(221, 221, 221);
-  width: 40%;
+  width: 45%;
   text-align: center;
   display: flex;
   align-items: center;
@@ -110,3 +110,47 @@ nav {
   margin: 0 auto;
 }
 
+.client-version {
+  font-size: x-large;
+  font-weight: bolder;
+  margin-left: 0.5rem;
+}
+
+.client-version.name {
+  padding-right: 1rem;
+  border-right: 1px solid black;
+  margin-right: 1rem;
+}
+
+.path-selector {
+  display: flex;
+  justify-content: space-between;
+  max-width: 90%;
+  margin: 0 auto;
+  margin-top: 1rem;
+}
+
+.btn-path-selector {
+  border: 1px solid black;
+  min-width: 45%;
+  height: 50px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-path-selector:hover {
+  cursor: pointer;
+}
+
+.message-box {
+  width: 50%;
+  min-height: 50px;
+  overflow-wrap: break-word;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  padding: 0.1rem;
+  display: flex;
+  align-items: center;
+}

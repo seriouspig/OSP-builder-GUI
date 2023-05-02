@@ -10,10 +10,9 @@
   border: 1px solid black;
   background: var(--clr-grey-7);
   color: var(--clr-grey-8);
-  width: 58%;
-  min-height: 50px;
+  max-width: 100%;
+  min-height: 100%;
   overflow-wrap: break-word;
-  border-radius: var(--radius);
   font-size: 0.9rem;
   font-style: italic;
   padding: 0.1rem;

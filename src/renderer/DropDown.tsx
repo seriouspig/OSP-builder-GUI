@@ -21,7 +21,7 @@ const DropDown = ({ menu, selectClient, selectedClient }) => {
 
   return (
     <div>
-      <div className="path-selector">
+      <div className="info-container">
         <div className="btn btn-path-selector" onClick={handleOpen}>
           select client
         </div>

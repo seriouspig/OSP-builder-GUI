@@ -200,15 +200,19 @@ function Hello() {
       )}
 
       {state === 'config' && (
-        <button className="btn-config" onClick={() => setState('settings')}>
-          Settings
-        </button>
+        <>
+          <button className="btn-config" onClick={() => setState('settings')}>
+            Settings
+          </button>
+
+          <DropDown
+            menu={clients}
+            selectClient={selectClient}
+            selectedClient={selectedClient}
+          />
+        </>
       )}
-      <DropDown
-        menu={clients}
-        selectClient={selectClient}
-        selectedClient={selectedClient}
-      />
+
       {state === 'config' && (
         <div className="info-container">
           <div>
@@ -216,15 +220,19 @@ function Hello() {
               <Tags tags={tags} backupTags={backupTags} loadTags={loadTags} />
             )}
             <Log logName={logName} saveLogName={(name) => setLogName(name)} />
+            {tagsLoaded && configLoaded && (
+              <div className="button-module">
+              <button className="btn btn-path-selector" onClick={toggleBuild}>
+                Build
+              </button>
+              </div>
+            )}
           </div>
           <div>
             {configLoaded && (
               <Config config={config} selectedClient={selectedClient} />
             )}
           </div>
-          {tagsLoaded && configLoaded && (
-            <button onClick={toggleBuild}>Build</button>
-          )}
         </div>
       )}
       {state === 'build' && (

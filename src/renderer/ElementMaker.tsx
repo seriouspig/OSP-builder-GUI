@@ -10,6 +10,7 @@ function ElementMaker(props) {
         // Use JavaScript's ternary operator to specify <span>'s inner content
         props.showInputEle ? (
           <input
+            className="tags-button input"
             type="text"
             value={props.value}
             onChange={props.handleChange}

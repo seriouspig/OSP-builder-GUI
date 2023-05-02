@@ -307,12 +307,14 @@ const Tags = ({ tags, backupTags, loadTags }) => {
             showInputEle={editWow}
           />
         </div>
-        <button className="btn-config" onClick={backupTags}>
-          Backup tags
-        </button>
-        <button className="btn-config" onClick={loadTags}>
-          Load tags
-        </button>
+        <div className="info-text">
+          <button className="btn btn-path-selector small-btn" onClick={backupTags}>
+            Backup tags
+          </button>
+          <button className="btn btn-path-selector small-btn" onClick={loadTags}>
+            Load tags
+          </button>
+        </div>
       </div>
     </div>
   );
