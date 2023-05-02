@@ -38,7 +38,6 @@ const Config = ({ config, selectedClient }) => {
     setGpgSign(config.gpgsign);
   }, []);
 
-
   const toggleValue = (setter, value, string) => {
     setter(!value);
     console.log('---THIS IS THE VALUE:');
@@ -54,10 +53,9 @@ const Config = ({ config, selectedClient }) => {
       console.log(arg);
       if (arg === 'inboxVolume' && inboxVolume && !integration) {
         setTimeout(() => {
-                  console.log('Shoud change integration to true');
-                  toggleValue(setIntegration, integration, 'integration');
-        }, 100)
-
+          console.log('Shoud change integration to true');
+          toggleValue(setIntegration, integration, 'integration');
+        }, 100);
       } else if (arg === 'integration' && inboxVolume && !integration) {
         setTimeout(() => {
           console.log('Shoud change InboxVolume to false');
@@ -126,8 +124,9 @@ const Config = ({ config, selectedClient }) => {
             Create Inbox Volume
           </label>
         </div>
-        <div className="info-text">
+        <div className="info-checkbox">
           <div>Input Path Root:</div>
+
           <div
             className="btn-path"
             onDoubleClick={() =>
@@ -140,8 +139,9 @@ const Config = ({ config, selectedClient }) => {
             {inputPathRoot}
           </div>
         </div>
-        <div className="info-text">
+        <div className="info-checkbox">
           <div>Output Path Root:</div>
+
           <div
             className="btn-path"
             onDoubleClick={() =>
@@ -154,7 +154,7 @@ const Config = ({ config, selectedClient }) => {
             {outputPathRoot}
           </div>
         </div>
-        <div className="info-text">
+        <div className="info-checkbox">
           <div>CustomerPath:</div>
           <div
             className="btn-path"
@@ -168,7 +168,7 @@ const Config = ({ config, selectedClient }) => {
             {customerPath}
           </div>
         </div>
-        <div className="info-text">
+        <div className="info-checkbox">
           <div>JSON path:</div>
           <div
             className="btn-path"
@@ -297,7 +297,7 @@ const Config = ({ config, selectedClient }) => {
           </label>
         </div>
         <div className="info-text">
-          <div>Alna version:</div>
+          <div>Encryption:</div>
           <div className="info-radio">
             <label>
               <input
@@ -331,9 +331,9 @@ const Config = ({ config, selectedClient }) => {
             </label>
           </div>
         </div>
-        <div className="info-text">
+        <div className="info-checkbox">
           <div>GPG Sign:</div>
-          <div className="path">{selectedClient.gpgSign}</div>
+          <div className="btn-path">{selectedClient.gpgSign}</div>
         </div>
       </div>
     </div>

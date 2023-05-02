@@ -10,11 +10,16 @@
   border: 1px solid black;
   background: var(--clr-grey-7);
   color: var(--clr-grey-8);
-  max-width: 100%;
+  /* width: 100%;
   min-height: 100%;
-  overflow-wrap: break-word;
+  inline-size: 100%; */
+  word-break: break-all;
+      
   font-size: 0.9rem;
   font-style: italic;
   padding: 0.1rem;
   box-shadow: var(--inset-shadow);
+  margin-bottom: 0.5rem;
+  margin-top: 0.1rem;
 }
+

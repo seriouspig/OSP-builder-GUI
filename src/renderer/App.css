@@ -210,6 +210,13 @@ p {
     border-radius: var(--radius);
 }
 
+.info-module-horizontal {
+    margin: 1rem;
+    margin-top: 0;
+    border-radius: var(--radius);
+    display: flex;
+}
+
 .info-text {
     display: grid;
     grid-template-columns: 1fr 1fr;
