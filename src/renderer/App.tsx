@@ -1,6 +1,6 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Tags from './Tags';
 import Config from './Config';
 import Settings from './Settings';
@@ -19,12 +19,16 @@ function Hello() {
   const [logName, setLogName] = useState('Log name ...');
   const [tagsImporting, setTagsImporting] = useState(false);
 
+  const [, updateState] = useState();
+  const forceUpdate = useCallback(() => updateState({}), []);
+
+
   useEffect(() => {
     console.log('State Changed');
     window.electron.ipcRenderer.sendMessage('get-builder-path');
     window.electron.ipcRenderer.sendMessage('get-tags');
     window.electron.ipcRenderer.sendMessage('get-config');
-  }, [state]);
+  }, [builderPath]);
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-tags');
@@ -41,7 +45,7 @@ function Hello() {
   useEffect(() => {
     window.electron.ipcRenderer.on('get-tags', (arg) => {
       console.log('GETTING TAGS');
-
+      setTagsLoaded(false)
       console.log(arg);
       if (arg !== 'no tags') {
         setTags(arg);
@@ -50,6 +54,7 @@ function Hello() {
       } else {
         console.log('Here are the tags:');
         console.log(arg);
+        setState('config');
         setTagsLoaded(false);
       }
     });
@@ -90,6 +95,8 @@ function Hello() {
   });
 
   const toggleBuild = () => {
+    console.log("------------------------------")
+    console.log(state)
     if (state === 'config') {
       setLog('');
       window.electron.ipcRenderer.sendMessage('run-script', logName);
@@ -144,11 +151,12 @@ function Hello() {
   const loadTags = () => {
     console.log('Loading tags');
     window.electron.ipcRenderer.sendMessage('load-tags');
+    
   };
 
   useEffect(() => {
     window.electron.ipcRenderer.on('load-tags', (arg) => {
-      setState('loading')
+      setState('loading');
       console.log('Seding ');
       window.electron.ipcRenderer.sendMessage('get-tags');
       console.log(arg);
