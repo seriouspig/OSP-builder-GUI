@@ -20,16 +20,13 @@ function Hello() {
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState({});
 
-  const [, updateState] = useState();
-  const forceUpdate = useCallback(() => updateState({}), []);
+  window.electron.ipcRenderer.once('get-clients', (arg) => {
+    setClients(arg);
+  });
 
-    window.electron.ipcRenderer.once('get-clients', (arg) => {
-      setClients(arg);
-    });
-
-    useEffect(() => {
-      window.electron.ipcRenderer.sendMessage('get-clients');
-    }, []);
+  useEffect(() => {
+    window.electron.ipcRenderer.sendMessage('get-clients');
+  }, []);
 
   useEffect(() => {
     console.log('State Changed');
@@ -176,13 +173,20 @@ function Hello() {
     };
   });
 
-   const selectClient = (id) => {
-     for (const client of clients) {
-       if (client.id === id) {
-         setSelectedClient(client);
-       }
-     }
-   };
+  const selectClient = (id) => {
+    for (const client of clients) {
+      if (client.id === id) {
+        setSelectedClient(client);
+      }
+    }
+  };
+
+  useEffect(() => {
+    window.electron.ipcRenderer.sendMessage(
+      'change-gpg-sign',
+      selectedClient.gpgSign
+    );
+  }, [selectedClient]);
 
   return (
     <div className="container">
@@ -213,7 +217,11 @@ function Hello() {
             )}
             <Log logName={logName} saveLogName={(name) => setLogName(name)} />
           </div>
-          <div>{configLoaded && <Config config={config} />}</div>
+          <div>
+            {configLoaded && (
+              <Config config={config} selectedClient={selectedClient} />
+            )}
+          </div>
           {tagsLoaded && configLoaded && (
             <button onClick={toggleBuild}>Build</button>
           )}

@@ -336,21 +336,17 @@ ipcMain.on('backup-tags', async (event, arg) => {
     title: 'Save log file',
     buttonLabel: 'Save',
     properties: ['openDirectory'],
-    filters: [
-      { name: 'Custom File Type', extensions: ['bowl'] },
-    ],
+    filters: [{ name: 'Custom File Type', extensions: ['bowl'] }],
   };
-    dialog.showSaveDialog(mainWindow, options).then((result) => {
-      console.log(result.filePath);
-      tagsBowl = store.get('builder-path') + 'tags.bowl';
-      // File destination.txt will be created or overwritten by default.
-      fs.copyFile(tagsBowl, result.filePath, (err) => {
-        if (err) throw err;
-        event.reply('backup-tags', 'Tags backed up');
-      });
+  dialog.showSaveDialog(mainWindow, options).then((result) => {
+    console.log(result.filePath);
+    tagsBowl = store.get('builder-path') + 'tags.bowl';
+    // File destination.txt will be created or overwritten by default.
+    fs.copyFile(tagsBowl, result.filePath, (err) => {
+      if (err) throw err;
+      event.reply('backup-tags', 'Tags backed up');
     });
-          
-
+  });
 });
 
 ipcMain.on('load-tags', async (event, arg) => {
@@ -371,7 +367,7 @@ ipcMain.on('load-tags', async (event, arg) => {
 
 ipcMain.on('get-clients', async (event, arg) => {
   fs.readFile(
-    '/Users/piotrgryko/repos/integration_tool/integration_gui/nodegui/react-nodegui-starter/src/components/clientconfig.json',
+    store.get('builder-path') + 'clientconfig.json',
     'utf8',
     (error, data) => {
       if (error) {
@@ -381,6 +377,43 @@ ipcMain.on('get-clients', async (event, arg) => {
       event.reply('get-clients', JSON.parse(data).clients);
     }
   );
+});
+
+ipcMain.on('change-gpg-sign', async (event, arg) => {
+  console.log('=========== CHANGING GPG SIGN =============');
+  configBowl = store.get('builder-path') + 'config.bowl';
+  if (typeof arg !== 'undefined') {
+    fs.readFile(configBowl, 'utf8', function (err, data) {
+      if (err) {
+        return console.log(err);
+      }
+
+      console.log(arg);
+
+      var lineToReplace;
+      var replacer = 'gpgsign ' + arg;
+
+      var result;
+
+      if (arg === 'OSP-DOP-SIGN-ENCRYPT-CUSTOMER2') {
+        console.log('Should replace application.signing@blueboxaviation.com');
+        lineToReplace = 'gpgsign application.signing@blueboxaviation.com';
+      } else if (arg === 'application.signing@blueboxaviation.com') {
+        console.log('Should replace OSP-DOP-SIGN-ENCRYPT-CUSTOMER2');
+        lineToReplace = 'gpgsign OSP-DOP-SIGN-ENCRYPT-CUSTOMER2';
+      }
+
+      var re = new RegExp(lineToReplace, 'g');
+
+      var result = data.replace(re, replacer);
+
+      fs.writeFile(configBowl, result, 'utf8', function (err) {
+        if (err) return console.log(err);
+      });
+    });
+    event.reply('change-gpg-sign', arg);
+  }
+
 });
 
 // ================================ OSP BUILDER GUI END ====================================

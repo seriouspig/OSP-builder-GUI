@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Config.css';
 
-const Config = ({ config }) => {
+const Config = ({ config, selectedClient }) => {
   const [integration, setIntegration] = useState(false);
   const [inboxVolume, setInboxVolume] = useState(false);
   const [inputPathRoot, setInputPathRoot] = useState('');
@@ -17,6 +17,7 @@ const Config = ({ config }) => {
   const [skiphtml, setSkiphtml] = useState(false);
   const [skipcreaterelease, setSkipcreaterelease] = useState(false);
   const [skipOpensslEncryption, setSkipopensslencryption] = useState(false);
+  const [gpgSign, setGpgSign] = useState('');
 
   useEffect(() => {
     console.log(config);
@@ -34,7 +35,9 @@ const Config = ({ config }) => {
     setOutputPathRoot(config.integrationOutputPathRoot);
     setJsonPath(config.integrationJsonPath);
     setCustomerPath(config.integrationCustomerPath);
+    setGpgSign(config.gpgsign);
   }, []);
+
 
   const toggleValue = (setter, value, string) => {
     setter(!value);
@@ -326,6 +329,14 @@ const Config = ({ config }) => {
               />
               openSSL
             </label>
+          </div>
+        </div>
+        <div className="info-text">
+          <div>GPG Sign:</div>
+          <div
+            className="path"
+          >
+            {selectedClient.gpgSign}
           </div>
         </div>
       </div>
