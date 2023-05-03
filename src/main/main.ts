@@ -280,8 +280,10 @@ ipcMain.on('open-dialog-builder-path', async (event) => {
       var basepath = app.getAppPath();
       console.log(basepath);
       store.set('builder-path', result.filePaths + '/');
+      console.log("**********************")
+      console.log(result.filePaths + '/');
       event.reply('open-dialog-builder-path', result.filePaths + '/');
-      event.reply('get-builder-path', result.filePaths + '/');
+      // event.reply('get-builder-path', result.filePaths + '/');
     })
     .catch((err) => {
       console.log(err);
@@ -300,29 +302,33 @@ ipcMain.on('select-config-path', async (event, arg) => {
     })
     .then((result) => {
       reply.path = `${result.filePaths}`;
+      console.log("***********")
+      console.log(reply.path)
+      if (reply.path !== "") {
+              fs.readFile(configBowl, 'utf8', function (err, data) {
+                if (err) {
+                  return console.log(err);
+                }
+                console.log(data);
+                console.log(arg);
 
-      fs.readFile(configBowl, 'utf8', function (err, data) {
-        if (err) {
-          return console.log(err);
-        }
-        console.log(data);
-        console.log(arg);
+                var lineToReplace = arg.pathType + ' "' + arg.oldPath + '"';
+                var replacer = arg.pathType + ' "' + reply.path + '"';
 
-        var lineToReplace = arg.pathType + ' "' + arg.oldPath + '"';
-        var replacer = arg.pathType + ' "' + reply.path + '"';
+                console.log(lineToReplace);
+                console.log(replacer);
 
-        console.log(lineToReplace);
-        console.log(replacer);
+                var re = new RegExp(lineToReplace, 'g');
 
-        var re = new RegExp(lineToReplace, 'g');
+                var result = data.replace(re, replacer);
 
-        var result = data.replace(re, replacer);
+                fs.writeFile(configBowl, result, 'utf8', function (err) {
+                  if (err) return console.log(err);
+                  event.reply('select-config-path', reply);
+                });
+              });
+      }
 
-        fs.writeFile(configBowl, result, 'utf8', function (err) {
-          if (err) return console.log(err);
-          event.reply('select-config-path', reply);
-        });
-      });
 
       // event.reply('select-config-path', reply);
     })

@@ -128,7 +128,7 @@ const Config = ({ config, selectedClient }) => {
           <div>Input Path Root:</div>
 
           <div
-            className="btn-path"
+            className="btn-path openable"
             onDoubleClick={() =>
               selectPath({
                 pathType: 'integrationInputPathRoot',
@@ -143,7 +143,7 @@ const Config = ({ config, selectedClient }) => {
           <div>Output Path Root:</div>
 
           <div
-            className="btn-path"
+            className="btn-path openable"
             onDoubleClick={() =>
               selectPath({
                 pathType: 'integrationOutputPathRoot',
@@ -157,7 +157,7 @@ const Config = ({ config, selectedClient }) => {
         <div className="info-checkbox">
           <div>CustomerPath:</div>
           <div
-            className="btn-path"
+            className="btn-path openable"
             onDoubleClick={() =>
               selectPath({
                 pathType: 'integrationCustomerPath',
@@ -171,7 +171,7 @@ const Config = ({ config, selectedClient }) => {
         <div className="info-checkbox">
           <div>JSON path:</div>
           <div
-            className="btn-path"
+            className="btn-path openable"
             onDoubleClick={() =>
               selectPath({
                 pathType: 'integrationJsonPath',
