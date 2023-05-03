@@ -258,6 +258,8 @@ ipcMain.on('run-script', async (event, arg) => {
 
   child.stderr.on('data', (data) => {
     console.error(`child stderr:\n${data}`);
+    log_file.write(data);
+    mainWindow.webContents.send('output', `child stderr:\n${data}`);
   });
 
   process.on('exit', function () {
