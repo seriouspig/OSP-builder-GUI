@@ -214,7 +214,7 @@ function Hello() {
       )}
 
       {state === 'config' && (
-        <div className="info-container">
+        <div className="info-container main">
           <div>
             {tagsLoaded && (
               <Tags tags={tags} backupTags={backupTags} loadTags={loadTags} />

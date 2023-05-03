@@ -199,6 +199,10 @@ p {
   
 }
 
+.main {
+  margin-top: 1rem;
+}
+
 .info {
   padding: 0.5rem;
 }
@@ -211,6 +215,7 @@ p {
 }
 
 .info-module-horizontal {
+    width: 100%;
     margin: 1rem;
     margin-top: 0;
     border-radius: var(--radius);
@@ -287,4 +292,8 @@ p {
 
 .button-module .btn {
   min-width: 100%;
+}
+
+.client-selector {
+  margin: 0 1rem;
 }

@@ -22,20 +22,23 @@ const DropDown = ({ menu, selectClient, selectedClient }) => {
   return (
     <div>
       <div className="info-container">
-        <div className="info-module-horizontal">
-          <div className="btn btn-path-selector" onClick={handleOpen}>
-            select client
-          </div>
-
-          <div className="message-box">
-            <div className="client-version name">{selectedClient.name}</div>
-            {selectedClient.alnaVersion && (
-              <div className="client-version">
-                Alna Version: {selectedClient.alnaVersion}
-              </div>
-            )}
-          </div>
+        <div
+          className="btn btn-path-selector client-selector"
+          onClick={handleOpen}
+        >
+          select client
         </div>
+
+        <div className="message-box">
+          <div className="client-version name">{selectedClient.name}</div>
+          {selectedClient.alnaVersion && (
+            <div className="client-version alna">
+              Alna Version: {selectedClient.alnaVersion}
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="info-container">
         <div
           className="clients-container show-container"
           ref={clientsContainerRef}
