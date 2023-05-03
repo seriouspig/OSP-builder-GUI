@@ -6,6 +6,7 @@ import Config from './Config';
 import Settings from './Settings';
 import Log from './Log';
 import DropDown from './DropDown';
+import logoImg from './images/logo2.png';
 
 function Hello() {
   const [tags, setTags] = useState({});
@@ -190,7 +191,16 @@ function Hello() {
 
   return (
     <div className="container">
-      <div className="title">OSP BUILDER</div>
+      <div className="title">
+        <div>
+          <img src={logoImg} alt="" />
+        </div>
+        <div className="title-text">OSP BUILDER</div>
+        {state === 'config' && <button className="btn-config" onClick={() => setState('settings')}>
+          Settings
+        </button>}
+      </div>
+
       {state === 'settings' && (
         <Settings
           onClose={() => setState('config')}
@@ -201,9 +211,6 @@ function Hello() {
 
       {state === 'config' && (
         <>
-          <button className="btn-config" onClick={() => setState('settings')}>
-            Settings
-          </button>
 
           <DropDown
             menu={clients}
@@ -222,9 +229,9 @@ function Hello() {
             <Log logName={logName} saveLogName={(name) => setLogName(name)} />
             {tagsLoaded && configLoaded && (
               <div className="button-module">
-              <button className="btn btn-path-selector" onClick={toggleBuild}>
-                Build
-              </button>
+                <button className="btn btn-path-selector" onClick={toggleBuild}>
+                  Build
+                </button>
               </div>
             )}
           </div>

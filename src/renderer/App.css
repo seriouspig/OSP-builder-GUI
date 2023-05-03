@@ -183,20 +183,37 @@ p {
 
 .container {
   width: 90%;
-  border: 1px black solid;
   margin: 1rem auto;
 }
 
 .title {
-  border: 1px black solid;
   text-align: center;
+  height: 5rem;
+  margin: 0 2rem;
+  display: flex;
+  margin-bottom: 1rem;
+
+}
+
+img {
+  height: 100%;
+  object-fit: contain;
+  margin-left: 0;
+}
+
+.title-text {
+  font-size: 4rem;
+  font-weight: 100;
+  color: #00abe6;
+  margin-left: 2rem;
+    display: inline-block;
+  align-self: flex-end;
 }
 
 .info-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   margin: 0 1rem;
-  
 }
 
 .main {
@@ -208,28 +225,28 @@ p {
 }
 
 .info-module {
-    margin: 1rem;
-    margin-top: 0;
-    border: 1px black solid;
-    border-radius: var(--radius);
+  margin: 1rem;
+  margin-top: 0;
+  border: 1px black solid;
+  border-radius: var(--radius);
 }
 
 .info-module-horizontal {
-    width: 100%;
-    margin: 1rem;
-    margin-top: 0;
-    border-radius: var(--radius);
-    display: flex;
+  width: 100%;
+  margin: 1rem;
+  margin-top: 0;
+  border-radius: var(--radius);
+  display: flex;
 }
 
 .info-text {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0.25rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 0.25rem;
 }
 
 .info-checkbox {
-   padding: 0.25rem; 
+  padding: 0.25rem;
 }
 
 .checkbox {
@@ -249,29 +266,26 @@ p {
   white-space: pre;
   height: 80vh;
   border: solid 1px black;
-    padding: 1rem;
-    overflow: scroll;
-      display: flex;
+  padding: 1rem;
+  overflow: scroll;
+  display: flex;
   flex-direction: column-reverse;
-
 }
 
 .log-container {
   display: grid;
   grid-template-rows: 80vh 1fr;
   margin: 1rem;
-  
 }
 
 .btn-config {
   padding: 0.5rem;
   margin-top: 0.5rem;
   margin-left: 0.5rem;
-
 }
 
 .settings-container {
-    display: grid;
+  display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: 6fr 1fr;
   margin: 1rem;
@@ -279,15 +293,12 @@ p {
 
 .small-btn {
   margin: 0.2rem;
-
 }
 
 .button-module {
-
-    margin: 1rem;
-    margin-top: 0;
-    border-radius: var(--radius);
-
+  margin: 1rem;
+  margin-top: 0;
+  border-radius: var(--radius);
 }
 
 .button-module .btn {
