@@ -196,9 +196,16 @@ function Hello() {
           <img src={logoImg} alt="" />
         </div>
         <div className="title-text">OSP BUILDER</div>
-        {state === 'config' && <button className="btn-config" onClick={() => setState('settings')}>
-          Settings
-        </button>}
+        {state === 'config' && (
+          <button className="btn-config" onClick={() => setState('settings')}>
+            Settings
+          </button>
+        )}
+        {state === 'settings' && (
+          <button className="btn-config" onClick={() => setState('config')}>
+            Close
+          </button>
+        )}
       </div>
 
       {state === 'settings' && (
@@ -211,7 +218,6 @@ function Hello() {
 
       {state === 'config' && (
         <>
-
           <DropDown
             menu={clients}
             selectClient={selectClient}

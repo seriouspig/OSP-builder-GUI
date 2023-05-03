@@ -19,6 +19,8 @@ const DropDown = ({ menu, selectClient, selectedClient }) => {
     }
   }, [open]);
 
+  console.log(menu)
+
   return (
     <div>
       <div className="info-container">
@@ -44,6 +46,9 @@ const DropDown = ({ menu, selectClient, selectedClient }) => {
           ref={clientsContainerRef}
           onClick={handleOpen}
         >
+          
+          { menu !== "no clients" &&
+          
           <ul className="clients">
             {menu.map((client) => {
               return (
@@ -51,6 +56,7 @@ const DropDown = ({ menu, selectClient, selectedClient }) => {
               );
             })}
           </ul>
+          }
         </div>
       </div>
     </div>

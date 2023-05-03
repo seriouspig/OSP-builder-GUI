@@ -277,14 +277,19 @@ ipcMain.on('open-dialog-builder-path', async (event) => {
       properties: ['openDirectory'],
     })
     .then((result) => {
-      var basepath = app.getAppPath();
-      console.log(basepath);
-      store.set('builder-path', result.filePaths + '/');
-      console.log("**********************")
-      console.log(result.filePaths + '/');
-      event.reply('open-dialog-builder-path', result.filePaths + '/');
-      // event.reply('get-builder-path', result.filePaths + '/');
+      console.log(result.filePaths)
+      if (result.filePaths.length > 0) {
+        var basepath = app.getAppPath();
+        console.log(basepath);
+        store.set('builder-path', result.filePaths + '/');
+        console.log('**********************');
+        console.log(result.filePaths + '/');
+
+        event.reply('open-dialog-builder-path', result.filePaths + '/');
+        // event.reply('get-builder-path', result.filePaths + '/');
+      }
     })
+    
     .catch((err) => {
       console.log(err);
     });
@@ -377,7 +382,7 @@ ipcMain.on('get-clients', async (event, arg) => {
     'utf8',
     (error, data) => {
       if (error) {
-        event.reply('get-clients', error);
+        event.reply('get-clients', "no clients");
         return;
       }
       event.reply('get-clients', JSON.parse(data).clients);
