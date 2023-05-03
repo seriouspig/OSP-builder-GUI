@@ -10,7 +10,7 @@ const Log = (props) => {
 
   useEffect(() => {
     setLogNameEdit(props.logName)
-  }, [])
+  }, [props.logName])
 
   return (
     <div className="info-module">

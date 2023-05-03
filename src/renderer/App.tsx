@@ -18,14 +18,25 @@ function Hello() {
   const [state, setState] = useState('config');
   const [log, setLog] = useState('');
   const [builderPath, setBuilderPath] = useState('');
-  const [logName, setLogName] = useState('Log name ...');
+  const [logName, setLogName] = useState('');
   const [tagsImporting, setTagsImporting] = useState(false);
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState({});
 
-  window.electron.ipcRenderer.once('get-clients', (arg) => {
-    setClients(arg);
+  useEffect(() => {
+    window.electron.ipcRenderer.on('get-clients', (arg) => {
+      setClients(arg);
+    });
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners('get-clients');
+    };
   });
+
+  useEffect(() => {
+    console.log('Tags changed');
+    console.log(tags.base);
+    setLogName('buildlogs/' + tags.base);
+  }, [tags]);
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-clients');
@@ -37,6 +48,10 @@ function Hello() {
     window.electron.ipcRenderer.sendMessage('get-tags');
     window.electron.ipcRenderer.sendMessage('get-config');
   }, [builderPath]);
+
+  // useEffect(() => {
+  //   setLogName('buildlogs/' + tags.base);
+  // }, [state])
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-tags');
@@ -57,6 +72,7 @@ function Hello() {
       console.log(arg);
       if (arg !== 'no tags') {
         setTags(arg);
+        // setLogName('buildlogs/' + tags.base);
         setState('config');
         setTagsImporting(false);
         setTagsLoaded(true);
@@ -191,6 +207,16 @@ function Hello() {
     );
   }, [selectedClient]);
 
+  const reloadBase = (base) => {
+    console.log(base.new)
+    setTags((prevState) => ({
+      
+      // object that we want to update
+      ...prevState, // keep all other key-value pairs
+      base: base.new, // update the value of specific key
+    }));
+  };
+
   return (
     <div className="container">
       <div className="title">
@@ -218,26 +244,30 @@ function Hello() {
         />
       )}
 
-      {state === 'config' &&
-        tagsLoaded &&
-        configLoaded &&(
-          <>
-            <DropDown
-              menu={clients}
-              selectClient={selectClient}
-              selectedClient={selectedClient}
-            />
-          </>
-        )}
+      {state === 'config' && tagsLoaded && configLoaded && (
+        <>
+          <DropDown
+            menu={clients}
+            selectClient={selectClient}
+            selectedClient={selectedClient}
+          />
+        </>
+      )}
 
       {state === 'config' && (
         <div className="info-container main">
           <div>
             {tagsLoaded && (
-              <Tags tags={tags} backupTags={backupTags} loadTags={loadTags} />
+              <Tags
+                tags={tags}
+                backupTags={backupTags}
+                loadTags={loadTags}
+                reloadBase={reloadBase}
+              />
             )}
-            {tagsLoaded && configLoaded && state === 'config' &&
-            <Log logName={logName} saveLogName={(name) => setLogName(name)} />}
+            {tagsLoaded && configLoaded && state === 'config' && (
+              <Log logName={logName} saveLogName={(name) => setLogName(name)} />
+            )}
             {tagsLoaded && configLoaded && (
               <div className="button-module">
                 <button className="btn btn-path-selector" onClick={toggleBuild}>

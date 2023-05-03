@@ -3,7 +3,7 @@ import './Tags.css';
 import ElementMaker from './ElementMaker';
 import { config } from 'process';
 
-const Tags = ({ tags, backupTags, loadTags }) => {
+const Tags = ({ tags, backupTags, loadTags, reloadBase }) => {
   const [alna, setAlna] = useState('');
   const [customerName, setCustomerName] = useState({ old: '', new: '' });
   const [customerTag, setCustomerTag] = useState({ old: '', new: '' });
@@ -126,8 +126,7 @@ const Tags = ({ tags, backupTags, loadTags }) => {
         setWow({ old: arg[2], new: arg[2] });
       }
 
-      console.log('Here are the tags:');
-      console.log(arg);
+
     });
 
     return () => {
@@ -218,6 +217,7 @@ const Tags = ({ tags, backupTags, loadTags }) => {
             handleDoubleClick={() => setEditBase(true)}
             handleBlur={() => {
               handleTextChange(setBase, base, 'basetag'), setEditBase(false);
+              reloadBase(base)
             }}
             showInputEle={editBase}
           />
