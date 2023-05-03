@@ -284,6 +284,18 @@ img {
   margin-top: 0.5rem;
   margin-left: 2rem;
   justify-self: flex-end;
+  border: none;
+  background:none;
+}
+
+svg {
+  fill: black;
+  background-color: #305672;
+}
+
+.btn-config img:hover {
+  cursor: pointer;
+  color: #00abe6;
 }
 
 .settings-container {

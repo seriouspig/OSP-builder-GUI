@@ -7,6 +7,8 @@ import Settings from './Settings';
 import Log from './Log';
 import DropDown from './DropDown';
 import logoImg from './images/logo2.png';
+import settingsSvg from './images/settings.svg';
+import closeSvg from './images/close.svg';
 
 function Hello() {
   const [tags, setTags] = useState({});
@@ -198,12 +200,12 @@ function Hello() {
         <div className="title-text">OSP BUILDER</div>
         {state === 'config' && (
           <button className="btn-config" onClick={() => setState('settings')}>
-            Settings
+            <img src={settingsSvg} alt="" />
           </button>
         )}
         {state === 'settings' && (
           <button className="btn-config" onClick={() => setState('config')}>
-            Close
+            <img src={closeSvg} alt="" />
           </button>
         )}
       </div>
@@ -216,15 +218,17 @@ function Hello() {
         />
       )}
 
-      {state === 'config' && (
-        <>
-          <DropDown
-            menu={clients}
-            selectClient={selectClient}
-            selectedClient={selectedClient}
-          />
-        </>
-      )}
+      {state === 'config' &&
+        tagsLoaded &&
+        configLoaded &&(
+          <>
+            <DropDown
+              menu={clients}
+              selectClient={selectClient}
+              selectedClient={selectedClient}
+            />
+          </>
+        )}
 
       {state === 'config' && (
         <div className="info-container main">
@@ -232,7 +236,8 @@ function Hello() {
             {tagsLoaded && (
               <Tags tags={tags} backupTags={backupTags} loadTags={loadTags} />
             )}
-            <Log logName={logName} saveLogName={(name) => setLogName(name)} />
+            {tagsLoaded && configLoaded && state === 'config' &&
+            <Log logName={logName} saveLogName={(name) => setLogName(name)} />}
             {tagsLoaded && configLoaded && (
               <div className="button-module">
                 <button className="btn btn-path-selector" onClick={toggleBuild}>
