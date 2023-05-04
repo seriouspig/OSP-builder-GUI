@@ -324,7 +324,7 @@ function Hello() {
             <Modal closeModal={closeModal} modalMessage={modalMessage} />
           )}
           <div className="display-linebreak">
-            <div ref={messagesEndRef}>hello</div>
+            <div ref={messagesEndRef}></div>
             {log}
           </div>
           <button className="btn" onClick={toggleBuild}>

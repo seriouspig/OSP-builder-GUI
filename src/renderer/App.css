@@ -41,6 +41,7 @@ Variables
   --clr-white: #fff;
   --ff-primary: 'Roboto', sans-serif;
   --ff-secondary: 'Open Sans', sans-serif;
+  --ff-terminal: sans-serif;
   --transition: all 0.3s linear;
   --spacing: 0.25rem;
   --radius: 0.5rem;
@@ -271,6 +272,9 @@ img {
   overflow: scroll;
   display: flex;
   flex-direction: column-reverse;
+  background-color: #3f3f3f;
+  color: white;
+  font-family: monospace;
 }
 
 .log-container {
