@@ -133,9 +133,15 @@ function Hello() {
     console.log('------------------------------');
     console.log(state);
     if (state === 'config') {
-      setLog('');
-      window.electron.ipcRenderer.sendMessage('run-script', logName);
-      setState('build');
+      if (Object.keys(selectedClient).length !== 0) {
+        setLog('');
+        window.electron.ipcRenderer.sendMessage('run-script', logName);
+        setState('build');
+      } else {
+        setModalMessage("Please select a client")
+        setShowModal(true);
+      }
+
     } else if (state === 'build') {
       setState('config');
       window.electron.ipcRenderer.sendMessage('kill-script');
@@ -260,6 +266,9 @@ function Hello() {
 
   return (
     <div className="container">
+      {showModal && (
+        <Modal closeModal={closeModal} modalMessage={modalMessage} />
+      )}
       <div className="title">
         <div>
           <img src={logoImg} alt="" />
