@@ -19,15 +19,14 @@ const Log = (props) => {
         <div className="info-text">
           <div>Log file name:</div>
           <ElementMaker
+            className="tags-button"
             value={logNameEdit}
             showInputEle={editLog}
             handleDoubleClick={() => setEditLog(true)}
-            handleChange={(e) =>
-              setLogNameEdit( e.target.value )
-            }
+            handleChange={(e) => setLogNameEdit(e.target.value)}
             handleBlur={() => {
-                props.saveLogName(logNameEdit)
-                setEditLog(false);
+              props.saveLogName(logNameEdit);
+              setEditLog(false);
             }}
           />
         </div>

@@ -102,11 +102,19 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase, alnaVersion }) => {
     console.log(string + ' ' + oldValue);
     let newValue = value.new;
     console.log(string + ' ' + newValue);
-    window.electron.ipcRenderer.sendMessage('change-text-tags-value', [
-      oldValue,
-      string,
-      newValue,
-    ]);
+    if (string === 'datatag') {
+          window.electron.ipcRenderer.sendMessage('change-data-tag-value', [
+            oldValue,
+            string,
+            newValue,
+          ]);
+    } else {
+      window.electron.ipcRenderer.sendMessage('change-text-tags-value', [
+        oldValue,
+        string,
+        newValue,
+      ]);
+    }
   };
 
   useEffect(() => {

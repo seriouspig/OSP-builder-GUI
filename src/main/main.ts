@@ -81,8 +81,42 @@ ipcMain.on('update-alna', async (event, arg) => {
       }
     }
   });
+});
 
-  // event.reply('get-builder-path', store.get('builder-path'));
+ipcMain.on('change-data-tag-value', async (event, arg) => {
+  console.log(arg);
+  tagsBowl = store.get('builder-path') + 'tags.bowl';
+  fs.readFile(tagsBowl, 'utf8', function (err, data) {
+    if (err) {
+      return console.log(err);
+    }
+    console.log(arg[2]);
+    let splitArray = data.split('\n');
+    let dataTagExists = false;
+    for (let i = 0; i < splitArray.length; i++) {
+      if (splitArray[i].startsWith('VAR datatag')) {
+        dataTagExists = true;
+        console.log(arg[2]);
+        if (arg[2] === '') {
+          splitArray[i] = '';
+        } else {
+          splitArray[i] = 'VAR datatag ' + arg[2];
+        }
+        let result = splitArray.join('\n');
+        fs.writeFile(tagsBowl, result, 'utf8', function (err) {
+          if (err) return console.log(err);
+        });
+      }
+    }
+    if (!dataTagExists && arg[2] !== '') {
+      splitArray.pop()
+      splitArray.push('VAR datatag ' + arg[2]);
+      let result = splitArray.join('\n');
+      fs.writeFile(tagsBowl, result, 'utf8', function (err) {
+        if (err) return console.log(err);
+      });
+    }
+  });
 });
 
 ipcMain.on('get-builder-path', async (event, arg) => {
