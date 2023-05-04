@@ -30,6 +30,7 @@ const { spawn } = require('child_process');
 var util = require('util');
 const Store = require('electron-store');
 const store = new Store();
+const moment = require('moment')
 
 if (store.get('builder-path')) {
   console.log(
@@ -238,26 +239,28 @@ ipcMain.on('change-text-tags-value', async (event, arg) => {
 });
 
 // ------ RUN BUILD SCRIPT -------
+
 let child = null;
 
 ipcMain.on('run-script', async (event, arg) => {
   var log_file = fs.createWriteStream(
-    store.get('builder-path') + arg + '.log',
+    store.get('builder-path') + arg + "_" + moment().format() + '.log',
     { flags: 'w' }
   );
-  child = spawn('node', [store.get('builder-path') + 'testscript.js'], {
+  log_file.write(`${moment().format()} \n`);
+  child = spawn('node', [store.get('builder-path') + 'build.js'], {
     cwd: store.get('builder-path'),
     detached: false,
   });
   child.stdout.on('data', (data) => {
-    console.log(`child stdout: ${data}`);
+    console.log(data);
     // event.sender.send('start-logging', 'Start logging');
     mainWindow.webContents.send('output', `${data}`);
     log_file.write(data);
   });
 
   child.stderr.on('data', (data) => {
-    console.error(`child stderr:\n${data}`);
+    console.error(`${moment().format()}: ${data}`);
     log_file.write(data);
     mainWindow.webContents.send('output', `child stderr:\n${data}`);
   });
