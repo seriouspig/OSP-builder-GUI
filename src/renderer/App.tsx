@@ -23,8 +23,10 @@ function Hello() {
   const [tagsImporting, setTagsImporting] = useState(false);
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState({});
-  const [showModal, setShowModal] = useState(false)
-  const [modalMessage, setModalMessage] = useState('')
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     window.electron.ipcRenderer.on('get-clients', (arg) => {
@@ -195,22 +197,22 @@ function Hello() {
     };
   });
 
-    useEffect(() => {
-      window.electron.ipcRenderer.on('run-script', (arg) => {
-        setShowModal(true);
-        if (arg === 'success') {
-                  setModalMessage("Build finished successfuly!!!");
-        } else if (arg === 'error') {
-          setModalMessage('Something went wrong');
-        }
+  useEffect(() => {
+    window.electron.ipcRenderer.on('run-script', (arg) => {
+      setShowModal(true);
+      if (arg === 'success') {
+        setModalMessage('Build finished successfuly!!!');
+      } else if (arg === 'error') {
+        setModalMessage('Something went wrong');
+      }
 
-        console.log('arg');
-      });
-
-      return () => {
-        window.electron.ipcRenderer.removeAllListeners('run-script');
-      };
+      console.log('arg');
     });
+
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners('run-script');
+    };
+  });
 
   const selectClient = (id) => {
     for (const client of clients) {
@@ -228,9 +230,8 @@ function Hello() {
   }, [selectedClient]);
 
   const reloadBase = (base) => {
-    console.log(base.new)
+    console.log(base.new);
     setTags((prevState) => ({
-      
       // object that we want to update
       ...prevState, // keep all other key-value pairs
       base: base.new, // update the value of specific key
@@ -238,8 +239,18 @@ function Hello() {
   };
 
   const closeModal = () => {
-    setShowModal(false)
-  }
+    setShowModal(false);
+  };
+  const scrollToBottom = () => {
+    // messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (messagesEndRef.current !== null) {
+      setTimeout(() => messagesEndRef.current.scrollIntoView(), 2000);
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [log]);
 
   return (
     <div className="container">
@@ -309,9 +320,16 @@ function Hello() {
       )}
       {state === 'build' && (
         <div className="log-container">
-          {showModal && <Modal closeModal={closeModal} modalMessage={modalMessage}/>}
-          <div className="display-linebreak">{log}</div>
-          <button onClick={toggleBuild}>Cancel</button>
+          {showModal && (
+            <Modal closeModal={closeModal} modalMessage={modalMessage} />
+          )}
+          <div className="display-linebreak">
+            <div ref={messagesEndRef}>hello</div>
+            {log}
+          </div>
+          <button className="btn" onClick={toggleBuild}>
+            Cancel
+          </button>
         </div>
       )}
     </div>
