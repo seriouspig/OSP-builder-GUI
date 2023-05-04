@@ -30,7 +30,7 @@ const { spawn } = require('child_process');
 var util = require('util');
 const Store = require('electron-store');
 const store = new Store();
-const moment = require('moment')
+const moment = require('moment');
 
 if (store.get('builder-path')) {
   console.log(
@@ -62,6 +62,28 @@ ipcMain.on('ipc-example', async (event, arg) => {
 });
 
 // ================================ OSP BUILDER GUI START ==================================
+
+ipcMain.on('update-alna', async (event, arg) => {
+  console.log(arg);
+  tagsBowl = store.get('builder-path') + 'tags.bowl';
+  fs.readFile(tagsBowl, 'utf8', function (err, data) {
+    if (err) {
+      return console.log(err);
+    }
+    let splitArray = data.split('\n');
+    for (let i = 0; i < splitArray.length; i++) {
+      if (splitArray[i].startsWith('VAR alna')) {
+        splitArray[i] = 'VAR alna ' + arg;
+        let result = splitArray.join('\n');
+        fs.writeFile(tagsBowl, result, 'utf8', function (err) {
+          if (err) return console.log(err);
+        });
+      }
+    }
+  });
+
+  // event.reply('get-builder-path', store.get('builder-path'));
+});
 
 ipcMain.on('get-builder-path', async (event, arg) => {
   event.reply('get-builder-path', store.get('builder-path'));
@@ -243,9 +265,9 @@ ipcMain.on('change-text-tags-value', async (event, arg) => {
 let child = null;
 
 ipcMain.on('run-script', async (event, arg) => {
-  var result
+  var result;
   var log_file = fs.createWriteStream(
-    store.get('builder-path') + arg + "_" + moment().format() + '.log',
+    store.get('builder-path') + arg + '_' + moment().format() + '.log',
     { flags: 'w' }
   );
   log_file.write(`${moment().format()} \n`);
@@ -254,19 +276,19 @@ ipcMain.on('run-script', async (event, arg) => {
     detached: false,
   });
   child.stdout.on('data', (data) => {
-    result = 'success'
+    result = 'success';
     mainWindow.webContents.send('output', `${data}`);
     log_file.write(`${data}`);
   });
 
   child.stderr.on('data', (data) => {
-    result = 'error'
+    result = 'error';
     log_file.write(`${data}`);
     mainWindow.webContents.send('output', ` ${data}`);
   });
 
   child.on('exit', function () {
-    console.log(result)
+    console.log(result);
     event.reply('run-script', result);
     log_file.write(`${moment().format()}`);
     child.stdin.pause();
@@ -285,7 +307,7 @@ ipcMain.on('open-dialog-builder-path', async (event) => {
       properties: ['openDirectory'],
     })
     .then((result) => {
-      console.log(result.filePaths)
+      console.log(result.filePaths);
       if (result.filePaths.length > 0) {
         var basepath = app.getAppPath();
         console.log(basepath);
@@ -297,7 +319,7 @@ ipcMain.on('open-dialog-builder-path', async (event) => {
         // event.reply('get-builder-path', result.filePaths + '/');
       }
     })
-    
+
     .catch((err) => {
       console.log(err);
     });
@@ -315,33 +337,32 @@ ipcMain.on('select-config-path', async (event, arg) => {
     })
     .then((result) => {
       reply.path = `${result.filePaths}`;
-      console.log("***********")
-      console.log(reply.path)
-      if (reply.path !== "") {
-              fs.readFile(configBowl, 'utf8', function (err, data) {
-                if (err) {
-                  return console.log(err);
-                }
-                console.log(data);
-                console.log(arg);
+      console.log('***********');
+      console.log(reply.path);
+      if (reply.path !== '') {
+        fs.readFile(configBowl, 'utf8', function (err, data) {
+          if (err) {
+            return console.log(err);
+          }
+          console.log(data);
+          console.log(arg);
 
-                var lineToReplace = arg.pathType + ' "' + arg.oldPath + '"';
-                var replacer = arg.pathType + ' "' + reply.path + '"';
+          var lineToReplace = arg.pathType + ' "' + arg.oldPath + '"';
+          var replacer = arg.pathType + ' "' + reply.path + '"';
 
-                console.log(lineToReplace);
-                console.log(replacer);
+          console.log(lineToReplace);
+          console.log(replacer);
 
-                var re = new RegExp(lineToReplace, 'g');
+          var re = new RegExp(lineToReplace, 'g');
 
-                var result = data.replace(re, replacer);
+          var result = data.replace(re, replacer);
 
-                fs.writeFile(configBowl, result, 'utf8', function (err) {
-                  if (err) return console.log(err);
-                  event.reply('select-config-path', reply);
-                });
-              });
+          fs.writeFile(configBowl, result, 'utf8', function (err) {
+            if (err) return console.log(err);
+            event.reply('select-config-path', reply);
+          });
+        });
       }
-
 
       // event.reply('select-config-path', reply);
     })
@@ -390,7 +411,7 @@ ipcMain.on('get-clients', async (event, arg) => {
     'utf8',
     (error, data) => {
       if (error) {
-        event.reply('get-clients', "no clients");
+        event.reply('get-clients', 'no clients');
         return;
       }
       event.reply('get-clients', JSON.parse(data).clients);
@@ -432,7 +453,6 @@ ipcMain.on('change-gpg-sign', async (event, arg) => {
     });
     event.reply('change-gpg-sign', arg);
   }
-
 });
 
 // ================================ OSP BUILDER GUI END ====================================

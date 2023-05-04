@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import './Tags.css';
 import ElementMaker from './ElementMaker';
 import { config } from 'process';
+import { red } from 'chalk';
 
-const Tags = ({ tags, backupTags, loadTags, reloadBase }) => {
+const Tags = ({ tags, backupTags, loadTags, reloadBase, alnaVersion }) => {
   const [alna, setAlna] = useState('');
   const [customerName, setCustomerName] = useState({ old: '', new: '' });
   const [customerTag, setCustomerTag] = useState({ old: '', new: '' });
@@ -15,6 +16,7 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase }) => {
   const [musicplayer, setMusicplayer] = useState({ old: '', new: '' });
   const [papause, setPapause] = useState({ old: '', new: '' });
   const [wow, setWow] = useState({ old: '', new: '' });
+  const [data, setData] = useState({ old: '', new: '' });
 
   const [editName, setEditName] = useState(false);
   const [editTag, setEditTag] = useState(false);
@@ -26,6 +28,7 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase }) => {
   const [editMusicplayer, setEditMusicplayer] = useState(false);
   const [editPapause, setEditPapause] = useState(false);
   const [editWow, setEditWow] = useState(false);
+  const [editData, setEditData] = useState(false);
 
   useEffect(() => {
     console.log('--------- RESTARTED TAGS ---------');
@@ -69,6 +72,10 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase }) => {
     setWow({
       old: tags.wow,
       new: tags.wow,
+    });
+    setData({
+      old: tags.data,
+      new: tags.data,
     });
   }, []);
 
@@ -125,8 +132,6 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase }) => {
       } else if (arg[1] === 'wowtag') {
         setWow({ old: arg[2], new: arg[2] });
       }
-
-
     });
 
     return () => {
@@ -141,6 +146,7 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase }) => {
         <div className="info-text">
           <div>Customer name:</div>
           <ElementMaker
+            className="tags-button"
             value={customerName.new}
             handleChange={(e) =>
               setCustomerName({ old: customerName.old, new: e.target.value })
@@ -156,6 +162,7 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase }) => {
         <div className="info-text">
           <div>Customer tag:</div>
           <ElementMaker
+            className="tags-button"
             value={customerTag.new}
             handleChange={(e) =>
               setCustomerTag({ old: customerTag.old, new: e.target.value })
@@ -171,7 +178,8 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase }) => {
 
         <div className="info-text">
           <div>Alna version:</div>
-          <div className="info-radio">
+          <ElementMaker className="tags-button disabled" value={alnaVersion} />
+          {/* <div className="info-radio">
             <label>
               <input
                 type="radio"
@@ -190,11 +198,12 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase }) => {
               />
               3.5.3
             </label>
-          </div>
+          </div> */}
         </div>
         <div className="info-text">
           <div>Content:</div>
           <ElementMaker
+            className="tags-button"
             value={content.new}
             handleChange={(e) =>
               setContent({ old: content.old, new: e.target.value })
@@ -210,6 +219,7 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase }) => {
         <div className="info-text">
           <div>Base:</div>
           <ElementMaker
+            className="tags-button"
             value={base.new}
             handleChange={(e) =>
               setBase({ old: base.old, new: e.target.value })
@@ -217,7 +227,7 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase }) => {
             handleDoubleClick={() => setEditBase(true)}
             handleBlur={() => {
               handleTextChange(setBase, base, 'basetag'), setEditBase(false);
-              reloadBase(base)
+              reloadBase(base);
             }}
             showInputEle={editBase}
           />
@@ -225,6 +235,7 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase }) => {
         <div className="info-text">
           <div>Baja:</div>
           <ElementMaker
+            className="tags-button"
             value={baja.new}
             handleChange={(e) =>
               setBaja({ old: baja.old, new: e.target.value })
@@ -239,6 +250,7 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase }) => {
         <div className="info-text">
           <div>Tripman:</div>
           <ElementMaker
+            className="tags-button"
             value={tripman.new}
             handleChange={(e) =>
               setTripman({ old: tripman.old, new: e.target.value })
@@ -254,6 +266,7 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase }) => {
         <div className="info-text">
           <div>Maps:</div>
           <ElementMaker
+            className="tags-button"
             value={maps.new}
             handleChange={(e) =>
               setMaps({ old: maps.old, new: e.target.value })
@@ -268,6 +281,7 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase }) => {
         <div className="info-text">
           <div>Music Player:</div>
           <ElementMaker
+            className="tags-button"
             value={musicplayer.new}
             handleChange={(e) =>
               setMusicplayer({ old: musicplayer.old, new: e.target.value })
@@ -283,6 +297,7 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase }) => {
         <div className="info-text">
           <div>PA Pause:</div>
           <ElementMaker
+            className="tags-button"
             value={papause.new}
             handleChange={(e) =>
               setPapause({ old: papause.old, new: e.target.value })
@@ -298,6 +313,7 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase }) => {
         <div className="info-text">
           <div>WOW:</div>
           <ElementMaker
+            className="tags-button"
             value={wow.new}
             handleChange={(e) => setWow({ old: wow.old, new: e.target.value })}
             handleDoubleClick={() => setEditWow(true)}
@@ -308,10 +324,31 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase }) => {
           />
         </div>
         <div className="info-text">
-          <button className="btn btn-path-selector small-btn" onClick={backupTags}>
+          <div>Data Store:</div>
+          <ElementMaker
+            className="tags-button"
+            value={data.new}
+            handleChange={(e) =>
+              setData({ old: data.old, new: e.target.value })
+            }
+            handleDoubleClick={() => setEditData(true)}
+            handleBlur={() => {
+              handleTextChange(setData, data, 'datatag'), setEditData(false);
+            }}
+            showInputEle={editData}
+          />
+        </div>
+        <div className="info-text">
+          <button
+            className="btn btn-path-selector small-btn"
+            onClick={backupTags}
+          >
             Backup tags
           </button>
-          <button className="btn btn-path-selector small-btn" onClick={loadTags}>
+          <button
+            className="btn btn-path-selector small-btn"
+            onClick={loadTags}
+          >
             Load tags
           </button>
         </div>

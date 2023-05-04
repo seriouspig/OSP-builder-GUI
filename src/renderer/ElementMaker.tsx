@@ -18,7 +18,7 @@ function ElementMaker(props) {
             autoFocus
           />
         ) : (
-          <div className="tags-button"
+          <div className={props.className}
             onDoubleClick={props.handleDoubleClick}
           >
             {props.value}

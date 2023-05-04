@@ -29,6 +29,11 @@ function Hello() {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
+    console.log("Client change")
+    window.electron.ipcRenderer.sendMessage('update-alna', selectedClient.alnaVersion);
+  }, [selectedClient])
+
+  useEffect(() => {
     window.electron.ipcRenderer.on('get-clients', (arg) => {
       setClients(arg);
     });
@@ -218,6 +223,7 @@ function Hello() {
     for (const client of clients) {
       if (client.id === id) {
         setSelectedClient(client);
+        
       }
     }
   };
@@ -298,6 +304,7 @@ function Hello() {
                 backupTags={backupTags}
                 loadTags={loadTags}
                 reloadBase={reloadBase}
+                alnaVersion={selectedClient.alnaVersion}
               />
             )}
             {tagsLoaded && configLoaded && state === 'config' && (
