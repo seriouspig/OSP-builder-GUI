@@ -9,6 +9,7 @@ import DropDown from './DropDown';
 import logoImg from './images/logo2.png';
 import settingsSvg from './images/settings.svg';
 import closeSvg from './images/close.svg';
+import Modal from './Modal';
 
 function Hello() {
   const [tags, setTags] = useState({});
@@ -22,6 +23,8 @@ function Hello() {
   const [tagsImporting, setTagsImporting] = useState(false);
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState({});
+  const [showModal, setShowModal] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
 
   useEffect(() => {
     window.electron.ipcRenderer.on('get-clients', (arg) => {
@@ -192,6 +195,23 @@ function Hello() {
     };
   });
 
+    useEffect(() => {
+      window.electron.ipcRenderer.on('run-script', (arg) => {
+        setShowModal(true);
+        if (arg === 'success') {
+                  setModalMessage("Build finished successfuly!!!");
+        } else if (arg === 'error') {
+          setModalMessage('Something went wrong');
+        }
+
+        console.log('arg');
+      });
+
+      return () => {
+        window.electron.ipcRenderer.removeAllListeners('run-script');
+      };
+    });
+
   const selectClient = (id) => {
     for (const client of clients) {
       if (client.id === id) {
@@ -216,6 +236,10 @@ function Hello() {
       base: base.new, // update the value of specific key
     }));
   };
+
+  const closeModal = () => {
+    setShowModal(false)
+  }
 
   return (
     <div className="container">
@@ -285,6 +309,7 @@ function Hello() {
       )}
       {state === 'build' && (
         <div className="log-container">
+          {showModal && <Modal closeModal={closeModal} modalMessage={modalMessage}/>}
           <div className="display-linebreak">{log}</div>
           <button onClick={toggleBuild}>Cancel</button>
         </div>

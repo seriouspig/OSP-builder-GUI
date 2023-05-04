@@ -13,7 +13,8 @@ const DropDown = ({ menu, selectClient, selectedClient }) => {
 
   useEffect(() => {
     if (open) {
-      clientsContainerRef.current.style.height = `120px`;
+      console.log(menu.length)
+      clientsContainerRef.current.style.height = menu.length*40 + `px`;
     } else {
       clientsContainerRef.current.style.height = '0px';
     }

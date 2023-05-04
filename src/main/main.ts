@@ -243,6 +243,7 @@ ipcMain.on('change-text-tags-value', async (event, arg) => {
 let child = null;
 
 ipcMain.on('run-script', async (event, arg) => {
+  var result
   var log_file = fs.createWriteStream(
     store.get('builder-path') + arg + "_" + moment().format() + '.log',
     { flags: 'w' }
@@ -253,19 +254,21 @@ ipcMain.on('run-script', async (event, arg) => {
     detached: false,
   });
   child.stdout.on('data', (data) => {
-    console.log(data);
-    // event.sender.send('start-logging', 'Start logging');
+    result = 'success'
     mainWindow.webContents.send('output', `${data}`);
-    log_file.write(data);
+    log_file.write(`${data}`);
   });
 
   child.stderr.on('data', (data) => {
-    console.error(`${moment().format()}: ${data}`);
-    log_file.write(data);
-    mainWindow.webContents.send('output', `child stderr:\n${data}`);
+    result = 'error'
+    log_file.write(`${data}`);
+    mainWindow.webContents.send('output', ` ${data}`);
   });
 
-  process.on('exit', function () {
+  child.on('exit', function () {
+    console.log(result)
+    event.reply('run-script', result);
+    log_file.write(`${moment().format()}`);
     child.stdin.pause();
     child.kill();
   });
