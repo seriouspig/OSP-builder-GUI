@@ -397,8 +397,8 @@ ipcMain.on('change-gpg-sign', async (event, arg) => {
           splitArray[i] = 'VAR gpgsign ' + arg.gpgSign;
           result = splitArray.join('\n');
         }
-        if (splitArray[i].startsWith('VAR gpgparams')) {
-          splitArray[i] = 'VAR gpgparams ' + arg.gpgPass;
+        if (splitArray[i].startsWith('VAR gpgpass')) {
+          splitArray[i] = 'VAR gpgpass ' + arg.gpgPass;
           result = splitArray.join('\n');
         }
       }
