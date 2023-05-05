@@ -6,21 +6,16 @@ const DropDown = ({ menu, selectClient, selectedClient }) => {
   const clientsContainerRef = useRef(null);
 
   const handleOpen = () => {
-    console.log('Trying to open');
-    console.log(menu);
     setOpen(!open);
   };
 
   useEffect(() => {
     if (open) {
-      console.log(menu.length)
       clientsContainerRef.current.style.height = menu.length*40 + `px`;
     } else {
       clientsContainerRef.current.style.height = '0px';
     }
   }, [open]);
-
-  console.log(menu)
 
   return (
     <div>

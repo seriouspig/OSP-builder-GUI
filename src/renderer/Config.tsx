@@ -20,8 +20,6 @@ const Config = ({ config, selectedClient }) => {
   const [gpgSign, setGpgSign] = useState('');
 
   useEffect(() => {
-    console.log(config);
-    console.log('Config loaded');
     setIntegration(config.integration);
     setInboxVolume(config.inboxVolume);
     setSkipcreatestage(config.skipcreatestage);
@@ -40,8 +38,6 @@ const Config = ({ config, selectedClient }) => {
 
   const toggleValue = (setter, value, string) => {
     setter(!value);
-    console.log('---THIS IS THE VALUE:');
-    console.log(value);
     window.electron.ipcRenderer.sendMessage('toggle-config-value', [
       !value,
       string,
@@ -50,15 +46,12 @@ const Config = ({ config, selectedClient }) => {
 
   useEffect(() => {
     window.electron.ipcRenderer.on('toggle-config-value', (arg) => {
-      console.log(arg);
       if (arg === 'inboxVolume' && inboxVolume && !integration) {
         setTimeout(() => {
-          console.log('Shoud change integration to true');
           toggleValue(setIntegration, integration, 'integration');
         }, 100);
       } else if (arg === 'integration' && inboxVolume && !integration) {
         setTimeout(() => {
-          console.log('Shoud change InboxVolume to false');
           toggleValue(setInboxVolume, inboxVolume, 'inboxVolume');
         }, 100);
       }
@@ -69,14 +62,11 @@ const Config = ({ config, selectedClient }) => {
   });
 
   const selectPath = (path) => {
-    console.log('----- selecting config path -------');
     window.electron.ipcRenderer.sendMessage('select-config-path', path);
   };
 
   useEffect(() => {
     window.electron.ipcRenderer.on('select-config-path', (arg) => {
-      console.log('--------config path from main---------');
-      console.log(arg);
       if (arg.pathType === 'integrationInputPathRoot') {
         setInputPathRoot(arg.path);
       } else if (arg.pathType === 'integrationOutputPathRoot') {

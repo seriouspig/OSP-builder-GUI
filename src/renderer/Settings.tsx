@@ -9,7 +9,6 @@ const Settings = (props) => {
         <div
           className="btn btn-path-selector"
           onClick={() => props.selectBuilderPath()}
-          // onClick={handleSelectContentFolder}
         >
           Select OSP Builder Path:
         </div>

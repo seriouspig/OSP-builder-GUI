@@ -9,38 +9,17 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import {
-  app,
-  BrowserWindow,
-  shell,
-  ipcMain,
-  ipcRenderer,
-  dialog,
-  remote,
-} from 'electron';
+import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import config from './../builderConfig';
 
 const fs = require('fs');
-var childProcess = require('child_process');
 const { spawn } = require('child_process');
-var util = require('util');
 const Store = require('electron-store');
 const store = new Store();
 const moment = require('moment');
-
-if (store.get('builder-path')) {
-  console.log(
-    '================= BUILDER PATH FROM STORE ========================'
-  );
-  console.log(store.get('builder-path'));
-} else {
-  console.log('=============== NO STORE BUILDER PATH ===============');
-  console.log(store.get('builder-path'));
-}
 
 let tagsBowl;
 let configBowl;
@@ -55,16 +34,9 @@ class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null;
 
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
-});
-
 // ================================ OSP BUILDER GUI START ==================================
 
 ipcMain.on('update-alna', async (event, arg) => {
-  console.log(arg);
   tagsBowl = store.get('builder-path') + 'tags.bowl';
   fs.readFile(tagsBowl, 'utf8', function (err, data) {
     if (err) {
@@ -84,19 +56,16 @@ ipcMain.on('update-alna', async (event, arg) => {
 });
 
 ipcMain.on('change-data-tag-value', async (event, arg) => {
-  console.log(arg);
   tagsBowl = store.get('builder-path') + 'tags.bowl';
   fs.readFile(tagsBowl, 'utf8', function (err, data) {
     if (err) {
       return console.log(err);
     }
-    console.log(arg[2]);
     let splitArray = data.split('\n');
     let dataTagExists = false;
     for (let i = 0; i < splitArray.length; i++) {
       if (splitArray[i].startsWith('VAR datatag')) {
         dataTagExists = true;
-        console.log(arg[2]);
         if (arg[2] === '') {
           splitArray[i] = '';
         } else {
@@ -109,7 +78,7 @@ ipcMain.on('change-data-tag-value', async (event, arg) => {
       }
     }
     if (!dataTagExists && arg[2] !== '') {
-      splitArray.pop()
+      splitArray.pop();
       splitArray.push('VAR datatag ' + arg[2]);
       let result = splitArray.join('\n');
       fs.writeFile(tagsBowl, result, 'utf8', function (err) {
@@ -127,7 +96,6 @@ ipcMain.on('get-builder-path', async (event, arg) => {
 
 ipcMain.on('get-tags', async (event, arg) => {
   tagsBowl = store.get('builder-path') + 'tags.bowl';
-  console.log(tagsBowl);
   const tags = {};
   fs.readFile(tagsBowl, 'utf8', function (err, data) {
     if (err) {
@@ -148,7 +116,6 @@ ipcMain.on('get-tags', async (event, arg) => {
         tags[tagKeys] = tagValues;
       }
     });
-    console.log(tags);
     event.reply('get-tags', tags);
   });
 });
@@ -200,27 +167,19 @@ ipcMain.on('get-config', async (event, arg) => {
         }
       }
     });
-    console.log(conf);
     event.reply('get-config', conf);
   });
 });
 
 // ------ TOGGLE CONFIG VALUE -------
 ipcMain.on('toggle-config-value', async (event, arg) => {
-  console.log('=========== CHANGING INTEGRATION =============');
   configBowl = store.get('builder-path') + 'config.bowl';
   fs.readFile(configBowl, 'utf8', function (err, data) {
     if (err) {
       return console.log(err);
     }
-    console.log(data);
-    console.log(arg);
-    console.log(arg[1] + ' ' + arg[0].toString());
     const lineToReplace = arg[1] + ' ' + (!arg[0]).toString();
     const replacer = arg[1] + ' ' + arg[0].toString();
-
-    console.log(lineToReplace);
-    console.log(replacer);
 
     var re = new RegExp(lineToReplace, 'g');
 
@@ -234,20 +193,13 @@ ipcMain.on('toggle-config-value', async (event, arg) => {
 });
 
 ipcMain.on('toggle-tags-value', async (event, arg) => {
-  console.log('=========== CHANGING TAGS =============');
   tagsBowl = store.get('builder-path') + 'tags.bowl';
   fs.readFile(tagsBowl, 'utf8', function (err, data) {
     if (err) {
       return console.log(err);
     }
-    console.log(data);
-    console.log(arg);
-    console.log(arg[1] + ' ' + arg[0].toString());
     const lineToReplace = arg[1] + ' ' + arg[0].toString();
     const replacer = arg[1] + ' ' + arg[2].toString();
-
-    console.log(lineToReplace);
-    console.log(replacer);
 
     var re = new RegExp(lineToReplace, 'g');
 
@@ -261,14 +213,11 @@ ipcMain.on('toggle-tags-value', async (event, arg) => {
 });
 
 ipcMain.on('change-text-tags-value', async (event, arg) => {
-  console.log('=========== CHANGING TAGS TEXT =============');
   tagsBowl = store.get('builder-path') + 'tags.bowl';
   fs.readFile(tagsBowl, 'utf8', function (err, data) {
     if (err) {
       return console.log(err);
     }
-    console.log(data);
-    console.log(arg);
 
     var lineToReplace;
     var replacer;
@@ -279,9 +228,6 @@ ipcMain.on('change-text-tags-value', async (event, arg) => {
       lineToReplace = arg[1] + ' ' + arg[0];
       replacer = arg[1] + ' ' + arg[2];
     }
-
-    console.log(lineToReplace);
-    console.log(replacer);
 
     var re = new RegExp(lineToReplace, 'g');
 
@@ -322,7 +268,6 @@ ipcMain.on('run-script', async (event, arg) => {
   });
 
   child.on('exit', function () {
-    console.log(result);
     event.reply('run-script', result);
     log_file.write(`${moment().format()}`);
     child.stdin.pause();
@@ -341,19 +286,11 @@ ipcMain.on('open-dialog-builder-path', async (event) => {
       properties: ['openDirectory'],
     })
     .then((result) => {
-      console.log(result.filePaths);
       if (result.filePaths.length > 0) {
-        var basepath = app.getAppPath();
-        console.log(basepath);
         store.set('builder-path', result.filePaths + '/');
-        console.log('**********************');
-        console.log(result.filePaths + '/');
-
         event.reply('open-dialog-builder-path', result.filePaths + '/');
-        // event.reply('get-builder-path', result.filePaths + '/');
       }
     })
-
     .catch((err) => {
       console.log(err);
     });
@@ -371,21 +308,14 @@ ipcMain.on('select-config-path', async (event, arg) => {
     })
     .then((result) => {
       reply.path = `${result.filePaths}`;
-      console.log('***********');
-      console.log(reply.path);
       if (reply.path !== '') {
         fs.readFile(configBowl, 'utf8', function (err, data) {
           if (err) {
             return console.log(err);
           }
-          console.log(data);
-          console.log(arg);
 
           var lineToReplace = arg.pathType + ' "' + arg.oldPath + '"';
           var replacer = arg.pathType + ' "' + reply.path + '"';
-
-          console.log(lineToReplace);
-          console.log(replacer);
 
           var re = new RegExp(lineToReplace, 'g');
 
@@ -413,9 +343,7 @@ ipcMain.on('backup-tags', async (event, arg) => {
     filters: [{ name: 'Custom File Type', extensions: ['bowl'] }],
   };
   dialog.showSaveDialog(mainWindow, options).then((result) => {
-    console.log(result.filePath);
     tagsBowl = store.get('builder-path') + 'tags.bowl';
-    // File destination.txt will be created or overwritten by default.
     fs.copyFile(tagsBowl, result.filePath, (err) => {
       if (err) throw err;
       event.reply('backup-tags', 'Tags backed up');
@@ -429,9 +357,7 @@ ipcMain.on('load-tags', async (event, arg) => {
     filters: [{ name: 'Custom File Type', extensions: ['bowl'] }],
   };
   dialog.showOpenDialog(mainWindow, options).then((result) => {
-    console.log(result.filePaths[0]);
     tagsBowl = store.get('builder-path') + 'tags.bowl';
-    // File destination.txt will be created or overwritten by default.
     fs.copyFile(result.filePaths[0], tagsBowl, (err) => {
       if (err) throw err;
       event.reply('load-tags', 'Tags loaded');
@@ -454,7 +380,6 @@ ipcMain.on('get-clients', async (event, arg) => {
 });
 
 ipcMain.on('change-gpg-sign', async (event, arg) => {
-  console.log('=========== CHANGING GPG SIGN =============');
   configBowl = store.get('builder-path') + 'config.bowl';
   if (typeof arg !== 'undefined') {
     fs.readFile(configBowl, 'utf8', function (err, data) {
@@ -462,18 +387,14 @@ ipcMain.on('change-gpg-sign', async (event, arg) => {
         return console.log(err);
       }
 
-      console.log(arg);
-
       var lineToReplace;
       var replacer = 'gpgsign ' + arg;
 
       var result;
 
       if (arg === 'OSP-DOP-SIGN-ENCRYPT-CUSTOMER2') {
-        console.log('Should replace application.signing@blueboxaviation.com');
         lineToReplace = 'gpgsign application.signing@blueboxaviation.com';
       } else if (arg === 'application.signing@blueboxaviation.com') {
-        console.log('Should replace OSP-DOP-SIGN-ENCRYPT-CUSTOMER2');
         lineToReplace = 'gpgsign OSP-DOP-SIGN-ENCRYPT-CUSTOMER2';
       }
 

@@ -29,7 +29,6 @@ function Hello() {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    console.log("Client change")
     window.electron.ipcRenderer.sendMessage('update-alna', selectedClient.alnaVersion);
   }, [selectedClient])
 
@@ -43,8 +42,6 @@ function Hello() {
   });
 
   useEffect(() => {
-    console.log('Tags changed');
-    console.log(tags.base);
     setLogName('buildlogs/' + tags.base);
   }, [tags]);
 
@@ -53,15 +50,9 @@ function Hello() {
   }, []);
 
   useEffect(() => {
-    console.log('State Changed');
-    // window.electron.ipcRenderer.sendMessage('get-builder-path');
     window.electron.ipcRenderer.sendMessage('get-tags');
     window.electron.ipcRenderer.sendMessage('get-config');
   }, [builderPath]);
-
-  // useEffect(() => {
-  //   setLogName('buildlogs/' + tags.base);
-  // }, [state])
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('get-tags');
@@ -77,19 +68,13 @@ function Hello() {
 
   useEffect(() => {
     window.electron.ipcRenderer.on('get-tags', (arg) => {
-      console.log('GETTING TAGS');
       setTagsLoaded(false);
-      console.log(arg);
       if (arg !== 'no tags') {
         setTags(arg);
-        // setLogName('buildlogs/' + tags.base);
         setState('config');
         setTagsImporting(false);
         setTagsLoaded(true);
       } else {
-        console.log('Here are the tags:');
-        console.log(arg);
-
         setTagsLoaded(false);
       }
     });
@@ -103,12 +88,8 @@ function Hello() {
     window.electron.ipcRenderer.on('get-config', (arg) => {
       if (arg !== 'no config') {
         setConfig(arg);
-        console.log('Here is the config:');
-        console.log(arg);
         setConfigLoaded(true);
       } else {
-        console.log('Here is the config:');
-        console.log(arg);
         setConfigLoaded(false);
       }
     });
@@ -119,8 +100,6 @@ function Hello() {
 
   useEffect(() => {
     window.electron.ipcRenderer.on('get-builder-path', (arg) => {
-      console.log('--------builder path---------');
-      console.log(arg);
       setBuilderPath(arg);
       window.electron.ipcRenderer.removeAllListeners('get-builder-path');
     });
@@ -130,8 +109,6 @@ function Hello() {
   });
 
   const toggleBuild = () => {
-    console.log('------------------------------');
-    console.log(state);
     if (state === 'config') {
       if (Object.keys(selectedClient).length !== 0) {
         setLog('');
@@ -150,8 +127,6 @@ function Hello() {
 
   useEffect(() => {
     window.electron.ipcRenderer.on('output', (arg) => {
-      console.log('Here is the log:');
-      console.log(arg);
       setLog(`${log}${arg}`);
     });
     return () => {
@@ -160,7 +135,6 @@ function Hello() {
   });
 
   const handleSelectBuilderPath = () => {
-    console.log('=========SHOULD OPEN WINDOW=============');
     window.electron.ipcRenderer.sendMessage('open-dialog-builder-path');
   };
 
@@ -176,13 +150,11 @@ function Hello() {
   });
 
   const backupTags = () => {
-    console.log('Backing up tags');
     window.electron.ipcRenderer.sendMessage('backup-tags');
   };
 
   useEffect(() => {
     window.electron.ipcRenderer.on('backup-tags', (arg) => {
-      console.log(arg);
     });
     return () => {
       window.electron.ipcRenderer.removeAllListeners('backup-tags');
@@ -190,7 +162,6 @@ function Hello() {
   });
 
   const loadTags = () => {
-    console.log('Loading tags');
     setTagsImporting(true);
     window.electron.ipcRenderer.sendMessage('load-tags');
   };
@@ -198,9 +169,7 @@ function Hello() {
   useEffect(() => {
     window.electron.ipcRenderer.on('load-tags', (arg) => {
       setState('loading');
-      console.log('Seding ');
       window.electron.ipcRenderer.sendMessage('get-tags');
-      console.log(arg);
     });
 
     return () => {
@@ -216,8 +185,6 @@ function Hello() {
       } else if (arg === 'error') {
         setModalMessage('Something went wrong');
       }
-
-      console.log('arg');
     });
 
     return () => {
@@ -242,11 +209,9 @@ function Hello() {
   }, [selectedClient]);
 
   const reloadBase = (base) => {
-    console.log(base.new);
     setTags((prevState) => ({
-      // object that we want to update
-      ...prevState, // keep all other key-value pairs
-      base: base.new, // update the value of specific key
+      ...prevState, 
+      base: base.new, 
     }));
   };
 
@@ -254,7 +219,6 @@ function Hello() {
     setShowModal(false);
   };
   const scrollToBottom = () => {
-    // messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     if (messagesEndRef.current !== null) {
       setTimeout(() => messagesEndRef.current.scrollIntoView(), 2000);
     }

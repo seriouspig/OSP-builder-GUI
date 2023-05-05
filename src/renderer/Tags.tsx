@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './Tags.css';
 import ElementMaker from './ElementMaker';
-import { config } from 'process';
-import { red } from 'chalk';
 
 const Tags = ({ tags, backupTags, loadTags, reloadBase, alnaVersion }) => {
   const [alna, setAlna] = useState('');
@@ -31,7 +29,6 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase, alnaVersion }) => {
   const [editData, setEditData] = useState(false);
 
   useEffect(() => {
-    console.log('--------- RESTARTED TAGS ---------');
     setAlna(tags.alna);
     setCustomerName({
       old: tags.customerName,
@@ -79,29 +76,10 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase, alnaVersion }) => {
     });
   }, []);
 
-  const toggleTagsValue = (setter, value, string) => {
-    let newValue = '';
-    if (value === '3.5.2') {
-      newValue = '3.5.3';
-    } else {
-      newValue = '3.5.2';
-    }
-    setter(newValue);
-    console.log('---THIS IS THE VALUE:');
-    console.log(value);
-    window.electron.ipcRenderer.sendMessage('toggle-tags-value', [
-      value,
-      string,
-      newValue,
-    ]);
-  };
-
   const handleTextChange = (setter, value, string) => {
     setter(value);
     let oldValue = value.old;
-    console.log(string + ' ' + oldValue);
     let newValue = value.new;
-    console.log(string + ' ' + newValue);
     if (string === 'datatag') {
           window.electron.ipcRenderer.sendMessage('change-data-tag-value', [
             oldValue,
@@ -187,26 +165,6 @@ const Tags = ({ tags, backupTags, loadTags, reloadBase, alnaVersion }) => {
         <div className="info-text">
           <div>Alna version:</div>
           <ElementMaker className="tags-button disabled" value={alnaVersion} />
-          {/* <div className="info-radio">
-            <label>
-              <input
-                type="radio"
-                checked={alna === '3.5.2' && true}
-                className="radio-button"
-                onClick={() => toggleTagsValue(setAlna, alna, 'alna')}
-              />
-              3.5.2
-            </label>
-            <label>
-              <input
-                type="radio"
-                checked={alna === '3.5.3' && true}
-                className="radio-button"
-                onClick={() => toggleTagsValue(setAlna, alna, 'alna')}
-              />
-              3.5.3
-            </label>
-          </div> */}
         </div>
         <div className="info-text">
           <div>Content:</div>

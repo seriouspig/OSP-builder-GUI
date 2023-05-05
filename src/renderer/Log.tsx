@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './Log.css';
 import ElementMaker from './ElementMaker';
-import { prependOnceListener } from 'process';
 
 const Log = (props) => {
   
