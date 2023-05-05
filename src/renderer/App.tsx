@@ -11,7 +11,7 @@ import settingsSvg from './images/settings.svg';
 import closeSvg from './images/close.svg';
 import Modal from './Modal';
 
-function Hello() {
+function Gui() {
   const [tags, setTags] = useState({});
   const [config, setConfig] = useState({});
   const [configLoaded, setConfigLoaded] = useState(false);
@@ -204,7 +204,7 @@ function Hello() {
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage(
       'change-gpg-sign',
-      selectedClient.gpgSign
+      selectedClient
     );
   }, [selectedClient]);
 
@@ -320,7 +320,7 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Hello />} />
+        <Route path="/" element={<Gui />} />
       </Routes>
     </Router>
   );

@@ -360,12 +360,12 @@ ipcMain.on('load-tags', async (event, arg) => {
   };
   dialog.showOpenDialog(mainWindow, options).then((result) => {
     if (!result.canceled) {
-    tagsBowl = store.get('builder-path') + 'tags.bowl';
-    fs.copyFile(result.filePaths[0], tagsBowl, (err) => {
-      if (err) throw err;
-      event.reply('load-tags', 'Tags loaded');
-    });
-  }
+      tagsBowl = store.get('builder-path') + 'tags.bowl';
+      fs.copyFile(result.filePaths[0], tagsBowl, (err) => {
+        if (err) throw err;
+        event.reply('load-tags', 'Tags loaded');
+      });
+    }
   });
 });
 
@@ -385,32 +385,28 @@ ipcMain.on('get-clients', async (event, arg) => {
 
 ipcMain.on('change-gpg-sign', async (event, arg) => {
   configBowl = store.get('builder-path') + 'config.bowl';
+  let result;
   if (typeof arg !== 'undefined') {
     fs.readFile(configBowl, 'utf8', function (err, data) {
       if (err) {
         return console.log(err);
       }
-
-      var lineToReplace;
-      var replacer = 'gpgsign ' + arg;
-
-      var result;
-
-      if (arg === 'OSP-DOP-SIGN-ENCRYPT-CUSTOMER2') {
-        lineToReplace = 'gpgsign application.signing@blueboxaviation.com';
-      } else if (arg === 'application.signing@blueboxaviation.com') {
-        lineToReplace = 'gpgsign OSP-DOP-SIGN-ENCRYPT-CUSTOMER2';
+      let splitArray = data.split('\n');
+      for (let i = 0; i < splitArray.length; i++) {
+        if (splitArray[i].startsWith('VAR gpgsign')) {
+          splitArray[i] = 'VAR gpgsign ' + arg.gpgSign;
+          result = splitArray.join('\n');
+        }
+        if (splitArray[i].startsWith('VAR gpgparams')) {
+          splitArray[i] = 'VAR gpgparams ' + arg.gpgPass;
+          result = splitArray.join('\n');
+        }
       }
-
-      var re = new RegExp(lineToReplace, 'g');
-
-      var result = data.replace(re, replacer);
-
       fs.writeFile(configBowl, result, 'utf8', function (err) {
         if (err) return console.log(err);
       });
+      event.reply('change-gpg-sign', arg);
     });
-    event.reply('change-gpg-sign', arg);
   }
 });
 
