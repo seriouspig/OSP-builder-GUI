@@ -48,7 +48,7 @@ const DropDown = ({ menu, selectClient, selectedClient }) => {
           <ul className="clients">
             {menu.map((client) => {
               return (
-                <li onClick={() => selectClient(client.id)}>{client.name}</li>
+                <li key={client.id} onClick={() => selectClient(client.id)}>{client.name}</li>
               );
             })}
           </ul>

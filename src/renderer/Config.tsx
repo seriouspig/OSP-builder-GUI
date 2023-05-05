@@ -293,6 +293,7 @@ const Config = ({ config, selectedClient }) => {
               <input
                 type="radio"
                 checked={skipOpensslEncryption && true}
+                onChange={() => console.log('Encryption type changed')}
                 className="radio-button"
                 onClick={() =>
                   toggleValue(
@@ -308,6 +309,7 @@ const Config = ({ config, selectedClient }) => {
               <input
                 type="radio"
                 checked={!skipOpensslEncryption && true}
+                onChange={() => console.log('Encryption type changed')}
                 className="radio-button"
                 onClick={() =>
                   toggleValue(

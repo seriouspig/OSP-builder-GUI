@@ -343,11 +343,13 @@ ipcMain.on('backup-tags', async (event, arg) => {
     filters: [{ name: 'Custom File Type', extensions: ['bowl'] }],
   };
   dialog.showSaveDialog(mainWindow, options).then((result) => {
-    tagsBowl = store.get('builder-path') + 'tags.bowl';
-    fs.copyFile(tagsBowl, result.filePath, (err) => {
-      if (err) throw err;
-      event.reply('backup-tags', 'Tags backed up');
-    });
+    if (!result.canceled) {
+      tagsBowl = store.get('builder-path') + 'tags.bowl';
+      fs.copyFile(tagsBowl, result.filePath, (err) => {
+        if (err) throw err;
+        event.reply('backup-tags', 'Tags backed up');
+      });
+    }
   });
 });
 
@@ -357,11 +359,13 @@ ipcMain.on('load-tags', async (event, arg) => {
     filters: [{ name: 'Custom File Type', extensions: ['bowl'] }],
   };
   dialog.showOpenDialog(mainWindow, options).then((result) => {
+    if (!result.canceled) {
     tagsBowl = store.get('builder-path') + 'tags.bowl';
     fs.copyFile(result.filePaths[0], tagsBowl, (err) => {
       if (err) throw err;
       event.reply('load-tags', 'Tags loaded');
     });
+  }
   });
 });
 
