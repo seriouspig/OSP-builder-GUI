@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import './Log.css';
 import ElementMaker from './ElementMaker';
 
 const Log = (props) => {

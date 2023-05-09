@@ -1,13 +1,7 @@
-// ElementMaker.js
-
-import React from 'react';
-
-// Create an ElementMaker component
 function ElementMaker(props) {
   return (
     <span>
       {
-        // Use JavaScript's ternary operator to specify <span>'s inner content
         props.showInputEle ? (
           <input
             className="tags-button input"

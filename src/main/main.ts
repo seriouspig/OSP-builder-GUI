@@ -34,8 +34,6 @@ class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null;
 
-// ================================ OSP BUILDER GUI START ==================================
-
 ipcMain.on('update-alna', async (event, arg) => {
   tagsBowl = store.get('builder-path') + 'tags.bowl';
   fs.readFile(tagsBowl, 'utf8', function (err, data) {
@@ -92,8 +90,6 @@ ipcMain.on('get-builder-path', async (event, arg) => {
   event.reply('get-builder-path', store.get('builder-path'));
 });
 
-// ------ READ THE TAGS.BOWL -------
-
 ipcMain.on('get-tags', async (event, arg) => {
   tagsBowl = store.get('builder-path') + 'tags.bowl';
   const tags = {};
@@ -119,8 +115,6 @@ ipcMain.on('get-tags', async (event, arg) => {
     event.reply('get-tags', tags);
   });
 });
-
-// ------ READ THE CONFIG.BOWL -------
 
 ipcMain.on('get-config', async (event, arg) => {
   configBowl = store.get('builder-path') + 'config.bowl';
@@ -171,7 +165,6 @@ ipcMain.on('get-config', async (event, arg) => {
   });
 });
 
-// ------ TOGGLE CONFIG VALUE -------
 ipcMain.on('toggle-config-value', async (event, arg) => {
   configBowl = store.get('builder-path') + 'config.bowl';
   fs.readFile(configBowl, 'utf8', function (err, data) {
@@ -239,8 +232,6 @@ ipcMain.on('change-text-tags-value', async (event, arg) => {
   });
   event.reply('change-text-tags-value', arg);
 });
-
-// ------ RUN BUILD SCRIPT -------
 
 let child = null;
 
@@ -327,8 +318,6 @@ ipcMain.on('select-config-path', async (event, arg) => {
           });
         });
       }
-
-      // event.reply('select-config-path', reply);
     })
     .catch((err) => {
       console.log(err);
@@ -409,8 +398,6 @@ ipcMain.on('change-gpg-sign', async (event, arg) => {
     });
   }
 });
-
-// ================================ OSP BUILDER GUI END ====================================
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
