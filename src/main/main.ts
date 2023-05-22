@@ -305,12 +305,15 @@ ipcMain.on('select-config-path', async (event, arg) => {
             return console.log(err);
           }
 
-          var lineToReplace = arg.pathType + ' "' + arg.oldPath + '"';
-          var replacer = arg.pathType + ' "' + reply.path + '"';
+          const lines = data.split('\n');
+          const replacedLines = lines.map((line) => {
+            if (line.startsWith(`CONST ${arg.pathType}`)) {
+              return `CONST ${arg.pathType} "${reply.path}"`;
+            }
+            return line;
+          });
 
-          var re = new RegExp(lineToReplace, 'g');
-
-          var result = data.replace(re, replacer);
+          const result = replacedLines.join('\n');
 
           fs.writeFile(configBowl, result, 'utf8', function (err) {
             if (err) return console.log(err);
