@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Config.css';
+import ElementMaker from './ElementMaker';
 
 const Config = ({ config, selectedClient }) => {
   const [integration, setIntegration] = useState(false);
@@ -8,6 +9,7 @@ const Config = ({ config, selectedClient }) => {
   const [outputPathRoot, setOutputPathRoot] = useState('');
   const [jsonPath, setJsonPath] = useState('');
   const [customerPath, setCustomerPath] = useState('');
+  const [contentCyclePath, setContentCyclePath] = useState('');
   const [skipcreatestage, setSkipcreatestage] = useState(false);
   const [skipgit, setSkipgit] = useState(false);
   const [skipupdateconfigs, setSkipupdateconfigs] = useState(false);
@@ -34,6 +36,7 @@ const Config = ({ config, selectedClient }) => {
     setJsonPath(config.integrationJsonPath);
     setCustomerPath(config.integrationCustomerPath);
     setGpgSign(config.gpgsign);
+    setContentCyclePath(config.integrationInputPathRoot + config.integrationCustomerPath)
   }, []);
 
   const toggleValue = (setter, value, string) => {
@@ -84,6 +87,21 @@ const Config = ({ config, selectedClient }) => {
     };
   });
 
+  const selectContentCyclePath = () => {
+    window.electron.ipcRenderer.sendMessage('select-content-cycle-path');
+  };
+
+  useEffect(() => {
+    window.electron.ipcRenderer.on('select-content-cycle-path', (arg) => {
+      setContentCyclePath(arg.path)
+    });
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners(
+        'select-content-cycle-path'
+      );
+    };
+  });
+
   return (
     <div className="info-module">
       <div className="header">CONFIG</div>
@@ -115,18 +133,13 @@ const Config = ({ config, selectedClient }) => {
           </label>
         </div>
         <div className="info-checkbox">
-          <div>Input Path Root:</div>
+          <div>Content Cycle Path:</div>
 
           <div
             className="btn-path openable"
-            onDoubleClick={() =>
-              selectPath({
-                pathType: 'integrationInputPathRoot',
-                oldPath: inputPathRoot,
-              })
-            }
+            onDoubleClick={selectContentCyclePath}
           >
-            {inputPathRoot}
+            {contentCyclePath}
           </div>
         </div>
         <div className="info-checkbox">
@@ -144,20 +157,20 @@ const Config = ({ config, selectedClient }) => {
             {outputPathRoot}
           </div>
         </div>
-        <div className="info-checkbox">
+        {/* <div className="info-checkbox">
           <div>CustomerPath:</div>
-          <div
-            className="btn-path openable"
-            onDoubleClick={() =>
-              selectPath({
-                pathType: 'integrationCustomerPath',
-                oldPath: customerPath,
-              })
-            }
-          >
-            {customerPath}
-          </div>
-        </div>
+          <ElementMaker
+            className="tags-button"
+            value={customerPath}
+            handleChange={(e) => handleCustomerPathChange(e.target.value)}
+            handleDoubleClick={() => setEditCustomerPath(true)}
+            handleBlur={() => {
+              updatePath('integrationCustomerPath', customerPath),
+                setEditCustomerPath(false);
+            }}
+            showInputEle={editCustomerPath}
+          />
+        </div> */}
         <div className="info-checkbox">
           <div>JSON path:</div>
           <div

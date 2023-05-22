@@ -327,6 +327,52 @@ ipcMain.on('select-config-path', async (event, arg) => {
     });
 });
 
+ipcMain.on('select-content-cycle-path', async (event, arg) => {
+  const reply = {
+    path: ''
+  };
+  configBowl = store.get('builder-path') + 'config.bowl';
+  dialog
+    .showOpenDialog(mainWindow, {
+      properties: ['openDirectory'],
+    })
+    .then((result) => {
+      reply.path = `${result.filePaths}`;
+      if (reply.path !== '') {
+        fs.readFile(configBowl, 'utf8', function (err, data) {
+          if (err) {
+            return console.log(err);
+          }
+
+          const lines = data.split('\n');
+          const replacedLines = lines.map((line) => {
+            if (line.startsWith(`CONST integrationInputPathRoot`)) {
+              return `CONST integrationInputPathRoot "${reply.path.substr(
+                0,
+                reply.path.lastIndexOf('/')
+              )}"`;
+            } else if (line.startsWith(`CONST integrationCustomerPath`)) {
+              return `CONST integrationCustomerPath "${reply.path.substring(
+                reply.path.lastIndexOf('/')
+              )}"`;
+            }
+            return line;
+          });
+
+          const result = replacedLines.join('\n');
+
+          fs.writeFile(configBowl, result, 'utf8', function (err) {
+            if (err) return console.log(err);
+            event.reply('select-content-cycle-path', reply);
+          });
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
 ipcMain.on('backup-tags', async (event, arg) => {
   let options = {
     title: 'Save log file',
